@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combustion Equation Balancer — Triple E Technology</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Sarabun:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg:      #f5f7fa;
+  --bg2:     #ffffff;
+  --bg3:     #eef1f6;
+  --bg4:     #e3e8f0;
+  --border:  #d1d9e6;
+  --border2: #b0bdd0;
+  --text:    #1a2233;
+  --text2:   #4a5568;
+  --text3:   #7a8fa6;
+  --blue:    #1a56db;
+  --blue-lt: rgba(26,86,219,.08);
+  --teal:    #0a7a43;
+  --teal-lt: rgba(10,122,67,.09);
+  --amber:   #b45309;
+  --amber-lt:rgba(180,83,9,.09);
+  --red:     #c53030;
+  --red-lt:  rgba(197,48,48,.09);
+  --purple:  #6b21a8;
+  --purple-lt:rgba(107,33,168,.09);
+  --orange:  #c05621;
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'Sarabun', sans-serif;
+  --case1:   #1a56db;
+  --case2:   #c05621;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;}
+
+/* ── HEADER ── */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
+.hdr-logo{width:36px;height:36px;background:linear-gradient(135deg,#388bfd,#bc8cff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
+.hdr-title{font-size:15px;font-weight:700;letter-spacing:.02em;}
+.hdr-sub{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.hdr-ref{margin-left:auto;font-size:10px;color:var(--text3);font-family:var(--mono);text-align:right;line-height:1.5;}
+
+/* ── LAYOUT ── */
+.wrap{display:grid;grid-template-columns:340px 1fr;gap:0;height:calc(100vh - 61px);}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:16px;}
+.content{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;}
+
+/* ── SIDEBAR SECTIONS ── */
+.ss{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;}
+.st{font-size:10px;font-weight:700;color:var(--blue);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+label{display:block;font-size:11px;color:var(--text2);margin:8px 0 3px;font-family:var(--mono);}
+input[type=number],input[type=text],select{
+  width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:5px;
+  padding:6px 8px;color:var(--text);font-family:var(--mono);font-size:12px;
+  transition:border-color .15s;
+}
+input[type=number]:focus,select:focus{outline:none;border-color:var(--blue);}
+.unit-hint{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px;}
+.info-box{background:var(--blue-lt);border:1px solid rgba(56,139,253,.3);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--blue);font-family:var(--mono);line-height:1.7;}
+.warn-box{background:var(--amber-lt);border:1px solid rgba(210,153,34,.3);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--amber);line-height:1.7;}
+
+/* ── CASE SWITCHER ── */
+.case-tabs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:10px;}
+.case-tab{padding:7px 10px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--mono);background:var(--bg3);color:var(--text3);transition:all .15s;border:none;width:100%;}
+.case-tab.c1.on{background:var(--blue-lt);color:var(--case1);border-bottom:2px solid var(--case1);}
+.case-tab.c2.on{background:rgba(247,129,102,.12);color:var(--case2);border-bottom:2px solid var(--case2);}
+.case-tab:hover:not(.on){background:var(--bg4);}
+
+/* ── CASE BADGE ── */
+.cbadge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;font-family:var(--mono);}
+.cbadge-1{background:var(--blue-lt);color:var(--case1);}
+.cbadge-2{background:rgba(247,129,102,.15);color:var(--case2);}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.card-title{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.card-sub{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px;}
+
+/* ── BUTTONS ── */
+.btn{padding:7px 14px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px;font-family:var(--mono);cursor:pointer;transition:all .15s;}
+.btn:hover{background:var(--bg4);border-color:var(--border2);}
+.btn-p{background:var(--blue);border-color:var(--blue);color:#fff;}
+.btn-p:hover{background:#58a6ff;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+
+/* ── FUEL COMPOSITION FORM (Software-4 style) ── */
+.fc-form{width:100%;}
+.fc-row{display:flex;align-items:center;margin:3px 0;gap:4px;}
+.fc-lbl{flex:1;text-align:right;font-size:11px;color:var(--text2);font-family:var(--mono);padding-right:6px;white-space:nowrap;}
+.fc-bracket{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;}
+.fc-input{width:80px;background:#fff;border:1px solid var(--border2);border-radius:3px;padding:4px 6px;color:var(--text);font-family:var(--mono);font-size:12px;text-align:right;}
+.fc-input:focus{outline:none;border-color:var(--blue);background:#f0f4ff;}
+.fc-sumrow{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
+.fc-sumlbl{font-size:11px;font-family:var(--mono);color:var(--text2);}
+.fc-sumval{width:80px;background:var(--bg4);border:1px solid var(--border);border-radius:3px;padding:4px 6px;font-family:var(--mono);font-size:12px;text-align:right;font-weight:700;}
+.sum-ok .fc-sumval{background:#dcfce7;color:var(--teal);border-color:rgba(10,122,67,.3);}
+.sum-warn .fc-sumval{background:#fee2e2;color:var(--red);border-color:rgba(197,48,48,.3);}
+.fc-finish{margin-top:6px;width:100%;background:#2e7d32;color:#fff;border:none;border-radius:4px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--mono);}
+.fc-finish:hover{background:#1b5e20;}
+.comp-sum{font-size:11px;font-family:var(--mono);padding:5px 8px;border-radius:4px;text-align:center;margin-top:6px;font-weight:700;}
+.sum-ok{background:var(--teal-lt);color:var(--teal);border:1px solid rgba(10,122,67,.3);}
+.sum-warn{background:var(--red-lt);color:var(--red);border:1px solid rgba(197,48,48,.3);}
+
+/* ── EQUATION DISPLAY — 3 Stages ── */
+.eq-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:var(--sans);font-size:13px;overflow-x:auto;}
+.eq-stage{margin-bottom:14px;padding:12px;border-radius:8px;border:1px solid var(--border);}
+.eq-stage-info{background:#f0f7ff;border-color:#bdd6ff;}
+.eq-stage-formula{background:#fff8ec;border-color:#fcd89a;}
+.eq-stage-rxn{background:#f0fdf4;border-color:#86efac;}
+.eq-stage-balanced{background:#faf5ff;border-color:#d8b4fe;}
+.eq-stage-hdr{font-size:11px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:.05em;margin-bottom:8px;text-transform:uppercase;}
+.eq-ref{background:var(--blue-lt);color:var(--blue);border-radius:4px;padding:1px 6px;font-size:10px;margin-left:6px;font-weight:400;}
+
+/* Formula block */
+.eq-formula-block{font-family:var(--mono);font-size:12px;}
+.eq-formula-line{display:flex;align-items:center;gap:8px;padding:4px 0;}
+.eq-subst-line{display:flex;align-items:center;gap:8px;padding:2px 0;color:var(--amber);}
+.eq-result-line{display:flex;align-items:center;gap:8px;padding:3px 0;border-top:1px solid var(--border);margin-top:4px;}
+.eq-lhs{min-width:90px;color:var(--text2);font-weight:600;}
+.eq-result-val{font-size:16px;font-weight:700;color:var(--blue);}
+.eq-unit{font-size:10px;color:var(--text3);}
+
+/* Fraction group */
+.eq-frac-group{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;}
+.eq-numerator{padding-bottom:2px;border-bottom:1.5px solid currentColor;font-size:11px;}
+.eq-denominator{padding-top:2px;font-size:11px;}
+
+/* Reaction rows */
+.eq-rxn-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px;font-family:var(--mono);}
+.eq-rxn-lbl{min-width:80px;color:var(--text3);font-size:10px;font-weight:700;}
+.eq-rxn-formula{color:var(--text);flex:1;}
+.eq-rxn-subst{color:var(--amber);font-size:11px;}
+.eq-coef{color:#1a56db;font-weight:700;}
+.eq-coef-prod{color:#0a7a43;font-weight:700;}
+.eq-num-val{color:var(--blue);}
+
+/* Balanced equation */
+.eq-balanced-wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;background:var(--bg3);border-radius:6px;font-family:var(--mono);}
+.eq-bal-section{flex:1;min-width:200px;}
+.eq-bal-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.eq-bal-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px;font-size:12px;}
+.eq-bal-coef{font-weight:700;color:var(--text);}
+.eq-coef-val{color:var(--blue);}
+.eq-bal-mol{color:var(--text);}
+.eq-mol-air{color:#1a56db;}
+.eq-mol-prod{color:#0a7a43;}
+.eq-bal-plus{color:var(--text3);padding:0 3px;}
+.eq-bal-note{font-size:10px;color:var(--text3);margin-left:6px;}
+.eq-arrow-big{font-size:22px;color:var(--text3);padding:0 6px;}
+
+/* Info */
+.eq-info-row{font-size:12px;font-family:var(--mono);color:var(--text);}
+.eq-info-lbl{color:var(--text3);margin-right:8px;}
+.eq-fuel-side b{color:var(--blue);}
+
+/* ── RESULTS TABLE ── */
+.rtbl{width:100%;border-collapse:collapse;font-size:12px;}
+.rtbl th{background:var(--bg3);color:var(--blue);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.rtbl td{padding:7px 10px;border-bottom:1px solid var(--border);font-family:var(--mono);color:var(--text2);}
+.rtbl tr:hover td{background:rgba(26,86,219,.04);}
+.rtbl td.hl{color:var(--text);font-weight:600;}
+.rtbl td.c1{color:var(--case1);}
+.rtbl td.c2{color:var(--case2);}
+.rtbl td.good{color:var(--teal);}
+.rtbl td.warn{color:var(--amber);}
+.rtbl td.bad{color:var(--red);}
+.tbl-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.kpi{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.blue::after{background:var(--blue);}
+.kpi.teal::after{background:var(--teal);}
+.kpi.amber::after{background:var(--amber);}
+.kpi.red::after{background:var(--red);}
+.kpi.purple::after{background:var(--purple);}
+.kpi.orange::after{background:var(--orange);}
+.kpi-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:var(--mono);margin-bottom:4px;}
+.kpi-val{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;}
+.kpi-unit{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
+
+/* ── COMPARE PANEL ── */
+.cmp-panel{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.cmp-col{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;}
+.cmp-hdr{font-size:11px;font-weight:700;font-family:var(--mono);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.cmp-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(48,54,61,.5);font-size:11px;font-family:var(--mono);}
+.cmp-row:last-child{border-bottom:none;}
+.cmp-key{color:var(--text3);}
+
+/* ── MOLECULE / STOICHIOMETRY TABLE ── */
+.stoi-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.stoi-tbl th{background:var(--bg4);color:var(--text3);font-family:var(--mono);font-size:10px;padding:5px 8px;text-align:center;border:1px solid var(--border);}
+.stoi-tbl td{padding:5px 8px;text-align:center;border:1px solid var(--border);font-family:var(--mono);color:var(--text2);}
+.stoi-tbl tr:hover td{background:rgba(26,86,219,.04);}
+.stoi-tbl td.mol-name{text-align:left;color:var(--text);}
+.stoi-tbl td.highlight{background:rgba(26,86,219,.1);color:var(--blue);font-weight:600;}
+
+/* ── SANKEY ── */
+canvas{display:block;width:100%;}
+.sankey-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;}
+
+/* ── TABS ── */
+.tabbar{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg2);padding:0 16px;}
+.tab{padding:9px 16px;font-size:12px;font-weight:600;font-family:var(--mono);cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);transition:all .15s;}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.tab:hover:not(.on){color:var(--text);}
+.panel{display:none;}
+.panel.on{display:flex;flex-direction:column;gap:14px;}
+
+/* ── STANDARDS TAB ── */
+.std-stab{padding:5px 12px;border-radius:5px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:11px;font-family:var(--mono);font-weight:600;cursor:pointer;transition:all .15s;}
+.std-stab:hover{background:var(--bg4);}
+.std-stab.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.std-detail{display:none;}
+.std-detail.on{display:block;}
+
+/* Standard formula blocks */
+.std-eq-section{background:#f8fafc;border-left:4px solid var(--blue);border-radius:0 6px 6px 0;padding:12px 14px;margin:10px 0;font-family:var(--mono);font-size:12px;}
+.std-eq-section.bs1{border-left-color:#2ea043;}
+.std-eq-section.bs2{border-left-color:#1a56db;}
+.std-eq-section.en{border-left-color:#6b21a8;}
+.std-eq-section.jis{border-left-color:#c05621;}
+.std-eq-section.is{border-left-color:#b45309;}
+.std-eq-hdr{font-weight:700;font-size:12px;color:var(--text);margin-bottom:8px;}
+.std-eq-formula{color:var(--text2);margin:4px 0;line-height:1.8;}
+.std-eq-subst{color:var(--amber);margin:2px 0;}
+.std-eq-result{color:var(--blue);font-weight:700;font-size:14px;margin-top:6px;}
+.std-eq-note{font-size:10px;color:var(--text3);margin-top:4px;font-style:italic;}
+
+/* Summary table overrides */
+.rtbl td.std-hhv{color:var(--teal);font-weight:700;font-size:13px;}
+.rtbl td.std-lhv{color:var(--orange);font-weight:700;font-size:13px;}
+.rtbl td.std-note{color:var(--text3);font-size:10px;font-style:italic;}
+.rtbl td.std-merged{background:var(--bg3);font-size:10px;color:var(--text3);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg3);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr;height:auto;}
+  .sidebar{height:auto;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .cmp-panel{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="hdr">
+  <div class="hdr-logo">3E</div>
+  <div>
+    <div class="hdr-title">🔥 Combustion Equation Balancer</div>
+    <div class="hdr-sub">ดุลสมการการเผาไหม้ · เปรียบเทียบ 2 กรณี</div>
+  </div>
+  <div class="hdr-ref">
+    อ้างอิง: Morvay & Gvozdenac<br>
+    Toolbox 5 — Eq. 5.15–5.54<br>
+    JIS B8222 / ASME PTC 4
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabbar">
+  <div class="tab on" onclick="goTab('balance')" id="tab-balance">⚗️ ดุลสมการ</div>
+  <div class="tab" onclick="goTab('standards')" id="tab-standards">📐 มาตรฐานสากล</div>
+  <div class="tab" onclick="goTab('compare')" id="tab-compare">⚖️ เปรียบเทียบ 2 กรณี</div>
+  <div class="tab" onclick="goTab('theory')" id="tab-theory">📖 ทฤษฎี</div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="wrap">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+
+  <!-- Case switcher -->
+  <div class="case-tabs">
+    <button class="case-tab c1 on" onclick="setCase(1)" id="ctab1">📘 กรณีที่ 1</button>
+    <button class="case-tab c2" onclick="setCase(2)" id="ctab2">📙 กรณีที่ 2</button>
+  </div>
+
+  <!-- Fuel type -->
+  <div class="ss">
+    <div class="st">🔤 ประเภทเชื้อเพลิง</div>
+    <label>ชนิดเชื้อเพลิง</label>
+    <select id="fuel_type" onchange="onFuelTypeChange()">
+      <optgroup label="🔵 ก๊าซ (Gaseous) — โดยปริมาตร">
+        <option value="gas">กำหนดเอง (Custom Gas)</option>
+        <option value="ng_a">Natural Gas A (93.9% CH₄)</option>
+        <option value="ng_b">Natural Gas B (67.4% CH₄)</option>
+        <option value="lpg">LPG (60% C₃H₈, 40% C₄H₁₀)</option>
+        <option value="pgbc">Producer Gas (Bituminous Coal)</option>
+        <option value="cwg">Carbureted Water Gas (CWG)</option>
+        <option value="cog">Coke-Oven Gas (C-OG)</option>
+        <option value="tg">Town Gas (TG)</option>
+      </optgroup>
+      <optgroup label="🟠 ของเหลว (Liquid) — โดยมวล">
+        <option value="liquid">กำหนดเอง (Custom Liquid)</option>
+        <option value="gasoline">น้ำมันเบนซิน (Gasoline)</option>
+        <option value="diesel">น้ำมันดีเซล (Diesel)</option>
+        <option value="lfo">Light Fuel Oil (น้ำมันเตา A)</option>
+        <option value="hfo">Heavy Fuel Oil (น้ำมันเตา C)</option>
+        <option value="rfo">Residual Fuel Oil</option>
+      </optgroup>
+      <optgroup label="🟤 ของแข็ง (Solid) — โดยมวล">
+        <option value="solid">กำหนดเอง (Custom Solid)</option>
+        <option value="coal1">ถ่านหิน No.1 (C=0.847)</option>
+        <option value="coal2">ถ่านหิน No.2 (C=0.785)</option>
+        <option value="coal3">ถ่านหิน No.3 (C=0.63)</option>
+        <option value="coal4">ถ่านหิน No.4 (C=0.59)</option>
+        <option value="wood">ไม้ (Wood, W=30%)</option>
+        <option value="ricehull">แกลบ (Rice Hull)</option>
+        <option value="bagasse">กากอ้อย (Bagasse, W=50%)</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Fuel composition -->
+  <div class="ss" id="comp-box">
+    <div class="st">⚗️ FUEL COMPOSITION <span id="comp-basis" style="font-size:9px;color:var(--text3)">(% โดยมวล)</span></div>
+    <div id="comp-fields">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Combustion conditions -->
+  <div class="ss">
+    <div class="st">🌡️ เงื่อนไขการเผาไหม้</div>
+    <label>Excess Air λ (−) <span style="color:var(--amber);font-size:10px">★ ค่าหลัก</span></label>
+    <input type="number" id="lambda" value="1.20" step="0.01" min="1.00" max="3.00" onchange="calc()">
+    <div class="unit-hint">λ=1.0 = Stoichiometric | ดี: ก๊าซ 1.05–1.15 | น้ำมัน 1.10–1.20 | ถ่าน 1.15–1.30</div>
+    <label>หรือ กรอก %O₂ ในไอเสีย (%) <span style="color:var(--text3);font-size:10px">คำนวณ λ อัตโนมัติ</span></label>
+    <input type="number" id="o2_meas" value="" step="0.1" min="0" max="20" placeholder="เว้นว่าง = ใช้ λ" onchange="calcFromO2()">
+    <label>%CO ในไอเสีย (ppm)</label>
+    <input type="number" id="co_ppm" value="0" step="10" min="0" onchange="calc()">
+    <label>อุณหภูมิไอเสีย T_fg (°C)</label>
+    <input type="number" id="t_fg" value="220" step="5" onchange="calc()">
+    <label>อุณหภูมิอากาศ T_air (°C)</label>
+    <input type="number" id="t_air" value="30" step="1" onchange="calc()">
+    <label>ความชื้นสัมพัทธ์ อากาศ RH (%)</label>
+    <input type="number" id="rh_air" value="70" step="1" onchange="calc()">
+    <label>ความดันบรรยากาศ (bar)</label>
+    <input type="number" id="p_atm" value="1.01325" step="0.001" onchange="calc()">
+  </div>
+
+  <!-- Calculate buttons -->
+  <button class="btn btn-p" style="width:100%;margin-bottom:6px" onclick="calc()">🔥 คำนวณดุลสมการ</button>
+  <button class="btn" style="width:100%" onclick="saveCase()">💾 บันทึกกรณีนี้</button>
+
+</div><!-- end sidebar -->
+
+<!-- ═══ CONTENT ═══ -->
+<div class="content">
+
+<!-- ═══ TAB: BALANCE ═══ -->
+<div id="panel-balance" class="panel on">
+
+  <!-- Balanced Equation Display -->
+  <div class="card">
+    <div class="card-title">🧪 สมการการเผาไหม้ที่ดุลแล้ว <span id="eq-case-badge" class="cbadge cbadge-1">กรณีที่ 1</span></div>
+    <div class="card-sub">อ้างอิง Eq.(5.21)–(5.29) Toolbox 5 · Morvay & Gvozdenac · หน่วย: kmol / 1 kg เชื้อเพลิง</div>
+    <div class="eq-box" id="eq-display">
+      <div style="color:var(--text3);font-size:12px">กรุณาเลือกเชื้อเพลิงและกด คำนวณ</div>
+    </div>
+  </div>
+
+  <!-- KPI Summary -->
+  <div id="kpi-section" style="display:none">
+    <div class="kpi-grid" id="kpi-grid"></div>
+  </div>
+
+  <!-- Stoichiometry Table — molar -->
+  <div class="card" id="stoi-card" style="display:none">
+    <div class="card-title">📊 ตารางดุลมวลและโมล (Molar Balance)</div>
+    <div class="card-sub">kmol ต่อ 1 kg เชื้อเพลิง · อ้างอิง Eq.(5.22)–(5.29)</div>
+    <div class="tbl-wrap">
+      <table class="stoi-tbl" id="stoi-tbl">
+        <thead>
+          <tr>
+            <th style="text-align:left">Species</th>
+            <th>M (kg/kmol)</th>
+            <th>ใน Fuel (kmol/kg_F)</th>
+            <th>อากาศ (kmol/kg_F)</th>
+            <th>ผลิต/ใช้ (kmol/kg_F)</th>
+            <th>ไอเสีย (kmol/kg_F)</th>
+            <th>% vol (dry)</th>
+          </tr>
+        </thead>
+        <tbody id="stoi-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mass Balance -->
+  <div class="card" id="mass-card" style="display:none">
+    <div class="card-title">⚖️ ดุลมวล (Mass Balance) — Eq.(5.28)–(5.38)</div>
+    <div class="card-sub">kg ต่อ 1 kg เชื้อเพลิง · Input = Output</div>
+    <div class="tbl-wrap">
+      <table class="rtbl" id="mass-tbl">
+        <thead><tr><th>รายการ</th><th>สูตร / ที่มา</th><th>ค่า</th><th>หน่วย</th></tr></thead>
+        <tbody id="mass-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Flue Gas Composition -->
+  <div class="card" id="fg-card" style="display:none">
+    <div class="card-title">💨 องค์ประกอบไอเสีย — Flue Gas Analysis</div>
+    <div class="card-sub">อ้างอิง Eq.(5.34)–(5.37) · vCO₂_max = ค่าที่ได้เมื่อ λ=1.0</div>
+    <div class="tbl-wrap">
+      <table class="rtbl" id="fg-tbl">
+        <thead><tr><th>องค์ประกอบ</th><th>สูตร</th><th>%vol (dry)</th><th>หมายเหตุ</th></tr></thead>
+        <tbody id="fg-body"></tbody>
+      </table>
+    </div>
+    <div id="fg-note" style="margin-top:8px;font-size:11px;font-family:var(--mono);color:var(--text2)"></div>
+  </div>
+
+  <!-- Energy / Calorific -->
+  <div class="card" id="cal-card" style="display:none">
+    <div class="card-title">🔋 ค่าความร้อนและการสูญเสียไอเสีย</div>
+    <div class="card-sub">Eq.(5.15)–(5.18) สำหรับ NCV/GCV · Eq.(5.49)–(5.52) สำหรับ Flue Gas Loss (q₂)</div>
+    <div class="tbl-wrap">
+      <table class="rtbl" id="cal-tbl">
+        <thead><tr><th>Parameter</th><th>สูตร</th><th>ค่า</th><th>หน่วย</th><th>สถานะ</th></tr></thead>
+        <tbody id="cal-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Flue gas loss Sankey -->
+  <div class="card" id="sankey-card" style="display:none">
+    <div class="card-title">📊 Sankey — การกระจายพลังงาน</div>
+    <div class="sankey-wrap"><canvas id="sankey-canvas" height="140"></canvas></div>
+  </div>
+
+</div><!-- end panel-balance -->
+
+<!-- ═══ TAB: STANDARDS ═══ -->
+<div id="panel-standards" class="panel">
+
+  <!-- Standards operating conditions override -->
+  <div class="card">
+    <div class="card-title">📐 การคำนวณประสิทธิภาพหม้อไอน้ำตามมาตรฐานสากล</div>
+    <div class="card-sub">อ้างอิง: ASME PTC4:2008 · BS 845-1:1987 · BS 845-2:1987 · BS EN 12953-11:2003 · JIS B8222:2009 · IS 13979:1994</div>
+    <div style="background:#fff8e7;border:1px solid #fcd34d;border-radius:6px;padding:10px 14px;font-size:11px;color:#92400e;font-family:var(--mono);">
+      ⚠️ ใช้ข้อมูลเชื้อเพลิงและ Flue Gas จากแท็บ ⚗️ ดุลสมการ — กรุณาคำนวณดุลสมการก่อนมาดูผลที่นี่
+    </div>
+
+    <!-- Extra operating inputs for standards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;">
+      <div>
+        <label style="font-size:11px;font-family:var(--mono);color:var(--text2)">Radiation Loss (%)</label>
+        <input type="number" id="std_rad" value="2.0" step="0.1" min="0" max="5" style="width:100%;padding:5px 8px;border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:12px;background:#fff;" onchange="refreshStandards()">
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">ทั่วไป: 0.5–2.5%</div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-family:var(--mono);color:var(--text2)">Unmeasured Loss (%)</label>
+        <input type="number" id="std_unm" value="0.0" step="0.1" min="0" max="3" style="width:100%;padding:5px 8px;border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:12px;background:#fff;" onchange="refreshStandards()">
+      </div>
+      <div>
+        <label style="font-size:11px;font-family:var(--mono);color:var(--text2)">Humidity Air (kg/kg_da)</label>
+        <input type="number" id="std_wair" value="0.012" step="0.001" min="0" max="0.04" style="width:100%;padding:5px 8px;border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:12px;background:#fff;" onchange="refreshStandards()">
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">ไทย RH70%@30°C ≈ 0.019</div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-family:var(--mono);color:var(--text2)">Rated Boiler Output (MW) <span style="color:#888">[EN]</span></label>
+        <input type="number" id="std_mw" value="5.0" step="0.5" min="0.1" max="500" style="width:100%;padding:5px 8px;border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:12px;background:#fff;" onchange="refreshStandards()">
+      </div>
+    </div>
+    <button class="btn btn-p" style="margin-top:10px" onclick="refreshStandards()">🔄 คำนวณมาตรฐานทั้งหมด</button>
+  </div>
+
+  <!-- Summary comparison table (same as image) -->
+  <div class="card" id="std-summary-card" style="display:none">
+    <div class="card-title">📊 ตารางสรุปเปรียบเทียบ — Heat Loss & Efficiency (อ้างอิงรูปแบบรูปภาพ)</div>
+    <div class="card-sub">ค่าที่คำนวณจากองค์ประกอบเชื้อเพลิงและเงื่อนไขการเผาไหม้จริง</div>
+    <div class="tbl-wrap">
+      <table class="rtbl" id="std-summary-tbl">
+        <thead>
+          <tr>
+            <th rowspan="2" style="min-width:120px">มาตรฐาน</th>
+            <th rowspan="2">ฐาน<br>Basis</th>
+            <th colspan="4" style="text-align:center;background:#1a3a5c;color:#fff">การสูญเสียความร้อน / Heat Loss (%)</th>
+            <th rowspan="2">Radiation &<br>Unmeasured (%)</th>
+            <th rowspan="2" style="color:#2ea043;font-weight:700">ประสิทธิภาพ<br>Efficiency (%)</th>
+          </tr>
+          <tr>
+            <th>1. Dry Gas</th>
+            <th>2. Moisture</th>
+            <th>3. Unburned CO</th>
+            <th>4. Air Moisture</th>
+          </tr>
+        </thead>
+        <tbody id="std-summary-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detail tabs per standard -->
+  <div class="card" id="std-detail-card" style="display:none">
+    <div class="card-title">🔍 รายละเอียดสูตรคำนวณตามมาตรฐาน</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;" id="std-sub-tabs">
+      <button class="std-stab on" onclick="showStdDetail('asme')">ASME PTC4</button>
+      <button class="std-stab" onclick="showStdDetail('bs1')">BS 845-1</button>
+      <button class="std-stab" onclick="showStdDetail('bs2')">BS 845-2</button>
+      <button class="std-stab" onclick="showStdDetail('en')">BS EN 12953-11</button>
+      <button class="std-stab" onclick="showStdDetail('jis')">JIS B8222</button>
+      <button class="std-stab" onclick="showStdDetail('is')">IS 13979</button>
+    </div>
+    <div id="std-detail-content"></div>
+  </div>
+
+</div><!-- end panel-standards -->
+
+<!-- ═══ TAB: COMPARE ═══ -->
+<div id="panel-compare" class="panel">
+
+  <div class="card">
+    <div class="card-title">⚖️ เปรียบเทียบ กรณีที่ 1 vs กรณีที่ 2</div>
+    <div class="card-sub">บันทึกแต่ละกรณีด้วยปุ่ม "💾 บันทึกกรณีนี้" แล้วดูผลที่นี่</div>
+    <div id="compare-status" class="warn-box">⚠️ ยังไม่มีข้อมูลกรณี — กรุณาคำนวณและบันทึก กรณีที่ 1 และ 2</div>
+  </div>
+
+  <div id="compare-result" style="display:none">
+
+    <!-- KPI comparison -->
+    <div class="cmp-panel" id="cmp-kpi-panel"></div>
+
+    <!-- Detailed table -->
+    <div class="card">
+      <div class="card-title">📋 ตารางเปรียบเทียบแบบละเอียด</div>
+      <div class="tbl-wrap">
+        <table class="rtbl" id="cmp-tbl">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>หน่วย</th>
+              <th style="color:var(--case1)">📘 กรณีที่ 1</th>
+              <th style="color:var(--case2)">📙 กรณีที่ 2</th>
+              <th>Δ (2−1)</th>
+              <th>Δ%</th>
+            </tr>
+          </thead>
+          <tbody id="cmp-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Fuel info summary -->
+    <div class="cmp-panel">
+      <div class="cmp-col">
+        <div class="cmp-hdr" style="color:var(--case1)">📘 กรณีที่ 1 — เชื้อเพลิง</div>
+        <div id="cmp-fuel1"></div>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-hdr" style="color:var(--case2)">📙 กรณีที่ 2 — เชื้อเพลิง</div>
+        <div id="cmp-fuel2"></div>
+      </div>
+    </div>
+
+    <!-- CO2 / Emission comparison -->
+    <div class="card">
+      <div class="card-title">🌍 การปล่อย CO₂ และ SO₂ — Eq.(5.53)–(5.54)</div>
+      <div class="tbl-wrap">
+        <table class="rtbl" id="emission-tbl">
+          <thead>
+            <tr>
+              <th>ก๊าซ</th><th>หน่วย</th>
+              <th style="color:var(--case1)">กรณีที่ 1</th>
+              <th style="color:var(--case2)">กรณีที่ 2</th>
+              <th>Δ%</th>
+            </tr>
+          </thead>
+          <tbody id="emission-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end compare-result -->
+
+</div><!-- end panel-compare -->
+
+<!-- ═══ TAB: THEORY ═══ -->
+<div id="panel-theory" class="panel">
+  <div class="card">
+    <div class="card-title">📖 ทฤษฎีการเผาไหม้ — Toolbox 5 Summary</div>
+    <div class="card-sub">อ้างอิง: Morvay & Gvozdenac "Applied Industrial Energy and Environmental Management"</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;font-family:var(--mono)">สมการหลัก (Eq. 5.28 — Stoichiometric Air)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:2">
+          A<sub>s</sub> = [c/12 + (CO)'/28 + (CO₂)'/44 + s/32 + h/4 − o/32] / (0.233/32)<br>
+          <span style="color:var(--amber)">หน่วย: kg_air / kg_fuel</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;font-family:var(--mono)">NCV ของเหลว/แข็ง (Eq. 5.15)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:2">
+          NCV = 33.9c + 117.0(h − o/8) + 10.5s − 2.5w [MJ/kg]<br>
+          GCV = NCV + 2.5(9h + w) [MJ/kg]<br>
+          <span style="color:var(--amber)">Dulong Formula</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px;font-family:var(--mono)">ดุลไฮโดรเจน (Eq. 5.22)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:2">
+          g<sub>H₂O</sub> = h/2 [kmol/kg_F]<br>
+          H₂ (0.5O₂) → H₂O<br>
+          <span style="color:var(--amber)">น้ำที่เกิดจาก H ในเชื้อเพลิง</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px;font-family:var(--mono)">Excess Air Factor (Eq. 5.31)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:2">
+          λ = A / A<sub>s</sub><br>
+          %EA = (λ − 1) × 100 %<br>
+          %O₂ ≈ 21 × (λ−1) / λ [ประมาณ]<br>
+          <span style="color:var(--amber)">แน่นอน: Eq.5.32</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:8px;font-family:var(--mono)">%O₂ จาก λ (Eq. 5.27)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:2">
+          v<sub>O₂</sub> = [0.233A/32 − c/12 − s/32 − h/4 + o/32] / [B]<br>
+          B = kmol dry flue gas / kg_F<br>
+          <span style="color:var(--amber)">Eq.5.33</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:8px;font-family:var(--mono)">CO₂ Emission (Eq. 5.53–5.54)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:2">
+          m<sub>CO₂</sub> = v<sub>CO₂</sub> × 44 × B [kg/kg_F]<br>
+          m<sub>SO₂</sub> = v<sub>SO₂</sub> × 64 × B [kg/kg_F]<br>
+          <span style="color:var(--amber)">C→CO₂: ×44/12</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fuel constants table -->
+    <div style="margin-top:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;font-family:var(--mono)">สูตรดุลมวลแต่ละธาตุ (Eq. 5.22–5.26)</div>
+      <div class="tbl-wrap">
+        <table class="rtbl">
+          <thead><tr><th>ธาตุ</th><th>ปฏิกิริยา</th><th>O₂ ที่ต้องการ (kmol/kmol)</th><th>ผลผลิต</th><th>กก.O₂/กก.ธาตุ</th></tr></thead>
+          <tbody>
+            <tr><td class="hl">C (คาร์บอน)</td><td style="font-family:var(--mono)">C + O₂ → CO₂</td><td style="font-family:var(--mono);text-align:center">1.0</td><td style="font-family:var(--mono)">CO₂ (44 g/mol)</td><td class="good" style="font-family:var(--mono);text-align:center">32/12 = 2.667</td></tr>
+            <tr><td class="hl">H (ไฮโดรเจน)</td><td style="font-family:var(--mono)">H₂ + ½O₂ → H₂O</td><td style="font-family:var(--mono);text-align:center">0.5</td><td style="font-family:var(--mono)">H₂O (18 g/mol)</td><td class="good" style="font-family:var(--mono);text-align:center">16/2 = 8.000</td></tr>
+            <tr><td class="hl">S (กำมะถัน)</td><td style="font-family:var(--mono)">S + O₂ → SO₂</td><td style="font-family:var(--mono);text-align:center">1.0</td><td style="font-family:var(--mono)">SO₂ (64 g/mol)</td><td class="warn" style="font-family:var(--mono);text-align:center">32/32 = 1.000</td></tr>
+            <tr><td class="hl">CO (คาร์บอนมอนอกไซด์)</td><td style="font-family:var(--mono)">CO + ½O₂ → CO₂</td><td style="font-family:var(--mono);text-align:center">0.5</td><td style="font-family:var(--mono)">CO₂ (44 g/mol)</td><td class="good" style="font-family:var(--mono);text-align:center">16/28 = 0.571</td></tr>
+            <tr><td class="hl">O (ออกซิเจนในเชื้อเพลิง)</td><td style="font-family:var(--mono)">— (ลด O₂ ที่ต้องการ)</td><td style="font-family:var(--mono);text-align:center">−0.5</td><td style="font-family:var(--mono)">—</td><td class="good" style="font-family:var(--mono);text-align:center">−1/32</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Reference table 5.4 -->
+    <div style="margin-top:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;font-family:var(--mono)">Table 5.4: Calorific Values of Pure Gases (อ้างอิงโดยตรง)</div>
+      <div class="tbl-wrap">
+        <table class="rtbl">
+          <thead><tr><th>Gas</th><th>Formula</th><th>GCV (kJ/Nm³)</th><th>NCV (kJ/Nm³)</th></tr></thead>
+          <tbody>
+            <tr><td class="hl">Methane</td><td style="font-family:var(--mono)">CH₄</td><td class="c1" style="font-family:var(--mono)">39,858</td><td style="font-family:var(--mono)">35,797</td></tr>
+            <tr><td class="hl">Ethane</td><td style="font-family:var(--mono)">C₂H₆</td><td class="c1" style="font-family:var(--mono)">70,422</td><td style="font-family:var(--mono)">64,351</td></tr>
+            <tr><td class="hl">Propane</td><td style="font-family:var(--mono)">C₃H₈</td><td class="c1" style="font-family:var(--mono)">101,823</td><td style="font-family:var(--mono)">93,575</td></tr>
+            <tr><td class="hl">n-Butane</td><td style="font-family:var(--mono)">C₄H₁₀</td><td class="c1" style="font-family:var(--mono)">134,019</td><td style="font-family:var(--mono)">123,552</td></tr>
+            <tr><td class="hl">Ethene</td><td style="font-family:var(--mono)">C₂H₄</td><td class="c1" style="font-family:var(--mono)">64,016</td><td style="font-family:var(--mono)">59,955</td></tr>
+            <tr><td class="hl">Benzene</td><td style="font-family:var(--mono)">C₆H₆</td><td class="c1" style="font-family:var(--mono)">146,371</td><td style="font-family:var(--mono)">140,342</td></tr>
+            <tr><td class="hl">CO</td><td style="font-family:var(--mono)">CO</td><td class="c1" style="font-family:var(--mono)">12,644</td><td style="font-family:var(--mono)">12,644</td></tr>
+            <tr><td class="hl">Hydrogen</td><td style="font-family:var(--mono)">H₂</td><td class="c1" style="font-family:var(--mono)">12,770</td><td style="font-family:var(--mono)">10,760</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div><!-- end panel-theory -->
+
+</div><!-- end content -->
+</div><!-- end wrap -->
+
+<script>
+// ══════════════════════════════════════════════════
+//  FUEL DATABASE — อ้างอิง Table 5.5, 5.6, 5.7
+// ══════════════════════════════════════════════════
+const FUELS = {
+  // GASEOUS — composition by VOLUME (fraction)
+  gas:    {type:'gas', name:'Custom Gas', ch4:0.939, c2h6:0.036, c3h8:0.012, c4h10:0.013, c2h4:0, c6h6:0, co:0, h2:0, n2:0, o2:0, co2:0},
+  ng_a:   {type:'gas', name:'Natural Gas A', ch4:0.939, c2h6:0.036, c3h8:0.012, c4h10:0.013, c2h4:0, c6h6:0, co:0, h2:0, n2:0, o2:0, co2:0},
+  ng_b:   {type:'gas', name:'Natural Gas B', ch4:0.674, c2h6:0.168, c3h8:0.158, c4h10:0, c2h4:0, c6h6:0, co:0, h2:0, n2:0.075, o2:0, co2:0},
+  lpg:    {type:'gas', name:'LPG', ch4:0, c2h6:0, c3h8:0.60, c4h10:0.40, c2h4:0, c6h6:0, co:0, h2:0, n2:0, o2:0, co2:0},
+  pgbc:   {type:'gas', name:'Producer Gas (Bituminous)', ch4:0.03, c2h6:0, c3h8:0, c4h10:0, c2h4:0, c6h6:0, co:0.27, h2:0.14, n2:0.509, o2:0.006, co2:0.045},
+  cwg:    {type:'gas', name:'Carbureted Water Gas', ch4:0.102, c2h6:0, c3h8:0, c4h10:0, c2h4:0.061, c6h6:0.028, co:0.34, h2:0.405, n2:0.029, o2:0.005, co2:0.03},
+  cog:    {type:'gas', name:'Coke-Oven Gas', ch4:0.321, c2h6:0, c3h8:0, c4h10:0, c2h4:0.035, c6h6:0.005, co:0.063, h2:0.465, n2:0.081, o2:0.008, co2:0.022},
+  tg:     {type:'gas', name:'Town Gas', ch4:0.27, c2h6:0.012, c3h8:0, c4h10:0.035, c2h4:0, c6h6:0, co:0.08, h2:0.518, n2:0.065, o2:0, co2:0.02},
+  // LIQUID — composition by MASS (fraction)
+  liquid:  {type:'liq', name:'Custom Liquid', c:0.838, h:0.121, s:0.035, n:0, o:0, w:0, a:0.006, density:0.87},
+  gasoline:{type:'liq', name:'Gasoline (น้ำมันเบนซิน)', c:0.862, h:0.128, s:0.010, n:0, o:0, w:0, a:0, density:0.76},
+  diesel:  {type:'liq', name:'Diesel (ดีเซล)', c:0.838, h:0.121, s:0.035, n:0, o:0, w:0, a:0.006, density:0.87},
+  lfo:     {type:'liq', name:'Light Fuel Oil', c:0.834, h:0.117, s:0.040, n:0, o:0, w:0, a:0.009, density:0.90},
+  hfo:     {type:'liq', name:'Heavy Fuel Oil', c:0.829, h:0.114, s:0.045, n:0, o:0, w:0, a:0.012, density:0.95},
+  rfo:     {type:'liq', name:'Residual Fuel Oil', c:0.883, h:0.095, s:0.012, n:0, o:0, w:0, a:0.010, density:0.95},
+  // SOLID — composition by MASS (fraction)
+  solid:   {type:'sol', name:'Custom Solid', c:0.785, h:0.047, s:0.019, n:0.017, o:0.042, w:0.04, a:0.05},
+  coal1:   {type:'sol', name:'ถ่านหิน No.1', c:0.847, h:0.026, s:0.011, n:0.010, o:0.016, w:0.04, a:0.05},
+  coal2:   {type:'sol', name:'ถ่านหิน No.2', c:0.785, h:0.047, s:0.019, n:0.017, o:0.042, w:0.04, a:0.05},
+  coal3:   {type:'sol', name:'ถ่านหิน No.3', c:0.63, h:0.039, s:0.018, n:0.013, o:0.09, w:0.16, a:0.05},
+  coal4:   {type:'sol', name:'ถ่านหิน No.4', c:0.59, h:0.037, s:0.017, n:0.012, o:0.084, w:0.18, a:0.08},
+  wood:    {type:'sol', name:'ไม้ (Wood)', c:0.335, h:0.06, s:0, n:0, o:0.30, w:0.30, a:0.005},
+  ricehull:{type:'sol', name:'แกลบ (Rice Hull)', c:0.3781, h:0.0468, s:0, n:0.0028, o:0.335, w:0, a:0.2368},
+  bagasse: {type:'sol', name:'กากอ้อย (Bagasse)', c:0.25, h:0.03, s:0, n:0, o:0.22, w:0.50, a:0},
+};
+
+// ── Gas field labels
+const GAS_FIELDS = [
+  {id:'ch4', label:'CH₄ Methane'},
+  {id:'c2h6', label:'C₂H₆ Ethane'},
+  {id:'c3h8', label:'C₃H₈ Propane'},
+  {id:'c4h10',label:'C₄H₁₀ n-Butane+'},
+  {id:'c2h4', label:'C₂H₄ Ethene'},
+  {id:'c6h6', label:'C₆H₆ Benzene'},
+  {id:'co',   label:'CO Carbon Monoxide'},
+  {id:'h2',   label:'H₂ Hydrogen'},
+  {id:'n2',   label:'N₂ Nitrogen'},
+  {id:'o2',   label:'O₂ Oxygen'},
+  {id:'co2',  label:'CO₂ Carbon Dioxide'},
+];
+const LIQ_FIELDS = [
+  {id:'c', label:'Carbon (c)'},
+  {id:'h', label:'Hydrogen (h)'},
+  {id:'s', label:'Sulfur (s)'},
+  {id:'n', label:'Nitrogen (n)'},
+  {id:'o', label:'Oxygen (o)'},
+  {id:'w', label:'Moisture (w)'},
+  {id:'a', label:'Ash (a)'},
+];
+const SOL_FIELDS = LIQ_FIELDS; // same
+
+// ══ State
+let activeCase = 1;
+let cases = {1: null, 2: null};
+
+// ══════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════
+const TABS = ['balance','standards','compare','theory'];
+function goTab(n) {
+  TABS.forEach(t => {
+    document.getElementById('panel-'+t).classList.toggle('on', t===n);
+    document.getElementById('tab-'+t).classList.toggle('on', t===n);
+  });
+  if (n==='standards' && cases[activeCase]) renderStandards(cases[activeCase]);
+}
+
+function setCase(n) {
+  activeCase = n;
+  document.getElementById('ctab1').classList.toggle('on', n===1);
+  document.getElementById('ctab2').classList.toggle('on', n===2);
+  // restore saved case if any
+  if (cases[n]) restoreCase(cases[n]);
+}
+
+function saveCase() {
+  if (!cases[activeCase]) { alert('กรุณาคำนวณก่อน'); return; }
+  // Already computed, just note
+  const lbl = activeCase === 1 ? 'กรณีที่ 1' : 'กรณีที่ 2';
+  showCompareResult();
+}
+
+function restoreCase(data) {
+  // restore fuel_type
+  document.getElementById('fuel_type').value = data.fuelKey;
+  buildCompFields();
+  // restore comp
+  const f = data.fuel;
+  if (f.type === 'gas') {
+    GAS_FIELDS.forEach(ff => { const el=document.getElementById('fi_'+ff.id); if(el) el.value=(f[ff.id]*100).toFixed(2); });
+  } else {
+    LIQ_FIELDS.forEach(ff => { const el=document.getElementById('fi_'+ff.id); if(el) el.value=(f[ff.id]).toFixed(4); });
+  }
+  document.getElementById('lambda').value = data.lambda;
+  document.getElementById('t_fg').value   = data.t_fg;
+  document.getElementById('t_air').value  = data.t_air;
+  document.getElementById('rh_air').value = data.rh_air;
+  calc();
+}
+
+// ══════════════════════════════════════════════════
+//  BUILD COMPOSITION FIELDS
+// ══════════════════════════════════════════════════
+function onFuelTypeChange() {
+  const key = document.getElementById('fuel_type').value;
+  const f   = FUELS[key];
+  // set fields
+  buildCompFields();
+  loadFuelPreset(key, f);
+  calc();
+}
+
+function buildCompFields() {
+  const key = document.getElementById('fuel_type').value;
+  const f   = FUELS[key];
+  const box = document.getElementById('comp-fields');
+  const basis = document.getElementById('comp-basis');
+
+  if (f.type === 'gas') {
+    basis.textContent = '(% โดยปริมาตร)';
+    const gasRows = [
+      {id:'ch4',  lbl:'Methane, CH₄'},
+      {id:'c2h6', lbl:'Ethane, C₂H₆'},
+      {id:'c3h8', lbl:'Propane, C₃H₈'},
+      {id:'c4h10',lbl:'Butane plus, C₄H₁₀'},
+      {id:'c2h4', lbl:'Ethene, C₂H₄'},
+      {id:'c6h6', lbl:'Benzene, C₆H₆'},
+      {id:'co',   lbl:'Carbon Monoxide, CO'},
+      {id:'h2',   lbl:'Hydrogen, H₂'},
+      {id:'n2',   lbl:'Nitrogen, N₂'},
+      {id:'o2',   lbl:'Oxygen, O₂'},
+      {id:'co2',  lbl:'Carbon Dioxide, CO₂'},
+    ];
+    box.innerHTML = `<div class="fc-form">`
+      + gasRows.map(r=>`
+      <div class="fc-row">
+        <span class="fc-lbl">${r.lbl}</span>
+        <span class="fc-bracket">[%] =</span>
+        <input class="fc-input" type="number" id="fi_${r.id}" value="0" step="0.01" min="0" max="100" onchange="updateSum()">
+      </div>`).join('')
+      + `<div class="fc-sumrow" id="fc-sum-row">
+          <span class="fc-sumlbl">Sum =</span>
+          <input class="fc-sumval" id="fc-sumval" readonly value="0.00">
+        </div>
+        <button class="fc-finish" onclick="calc()">Finish Enter</button>
+      </div>`;
+  } else {
+    const isLiq = f.type === 'liq';
+    basis.textContent = isLiq ? '(% หรือ fraction โดยมวล)' : '(% หรือ fraction โดยมวล)';
+    const solRows = [
+      {id:'c', lbl:'Carbon, c'},
+      {id:'h', lbl:'Hydrogen, h'},
+      {id:'s', lbl:'Sulfur, s'},
+      {id:'n', lbl:'Nitrogen, n'},
+      {id:'o', lbl:'Oxygen, o'},
+      {id:'w', lbl:'Moisture, w'},
+      {id:'a', lbl:'Ash, a'},
+    ];
+    box.innerHTML = `<div class="fc-form">`
+      + solRows.map(r=>`
+      <div class="fc-row">
+        <span class="fc-lbl">${r.lbl}</span>
+        <span class="fc-bracket">[%] =</span>
+        <input class="fc-input" type="number" id="fi_${r.id}" value="0" step="0.01" min="0" max="100" onchange="updateSum()">
+      </div>`).join('')
+      + `<div class="fc-sumrow" id="fc-sum-row">
+          <span class="fc-sumlbl">Sum =</span>
+          <input class="fc-sumval" id="fc-sumval" readonly value="0.00">
+        </div>
+        <button class="fc-finish" onclick="calc()">Finish Enter</button>
+      </div>`
+      + (isLiq ? `<div class="fc-row" style="margin-top:4px">
+          <span class="fc-lbl">Density</span>
+          <span class="fc-bracket">[kg/l] =</span>
+          <input class="fc-input" type="number" id="fi_density" value="${f.density||0.87}" step="0.001" min="0.5" max="2">
+        </div>` : '');
+  }
+}
+
+function loadFuelPreset(key, f) {
+  if (f.type === 'gas') {
+    GAS_FIELDS.forEach(ff => {
+      const el = document.getElementById('fi_'+ff.id);
+      if (el) el.value = (f[ff.id]*100).toFixed(2);
+    });
+  } else {
+    LIQ_FIELDS.forEach(ff => {
+      const el = document.getElementById('fi_'+ff.id);
+      if (el) el.value = (f[ff.id]*100).toFixed(4); // show as %
+    });
+    if (f.density) {
+      const d = document.getElementById('fi_density');
+      if (d) d.value = f.density;
+    }
+  }
+  updateSum();
+}
+
+function updateSum() {
+  const key = document.getElementById('fuel_type').value;
+  const f   = FUELS[key];
+  let sum = 0;
+  if (f.type === 'gas') {
+    GAS_FIELDS.forEach(ff => { sum += parseFloat(document.getElementById('fi_'+ff.id)?.value)||0; });
+  } else {
+    LIQ_FIELDS.forEach(ff => { sum += parseFloat(document.getElementById('fi_'+ff.id)?.value)||0; });
+  }
+  const el = document.getElementById('fc-sumval');
+  const row = document.getElementById('fc-sum-row');
+  if (el) el.value = sum.toFixed(2);
+  const ok = Math.abs(sum - 100) < 0.5;
+  if (row) row.className = 'fc-sumrow ' + (ok ? 'sum-ok' : 'sum-warn');
+  calc();
+}
+
+// ══════════════════════════════════════════════════
+//  READ FUEL FROM FIELDS
+// ══════════════════════════════════════════════════
+function readFuel() {
+  const key = document.getElementById('fuel_type').value;
+  const fd  = FUELS[key];
+  const f   = {type: fd.type, name: fd.name};
+
+  if (fd.type === 'gas') {
+    let total = 0;
+    GAS_FIELDS.forEach(ff => {
+      f[ff.id] = (parseFloat(document.getElementById('fi_'+ff.id)?.value)||0) / 100; // % → fraction
+      total += f[ff.id];
+    });
+    if (total > 0) GAS_FIELDS.forEach(ff => { f[ff.id] /= total; }); // normalize
+    // Convert volume composition → mass (Eq 5.4–5.11)
+    const Mf = 16*f.ch4 + 30*f.c2h6 + 44*f.c3h8 + 58*f.c4h10 + 28*f.c2h4 + 78*f.c6h6 + 28*f.co + 2*f.h2 + 28*f.n2 + 32*f.o2 + 44*f.co2;
+    f.Mf = Mf;
+    f.c = (12/Mf) * (f.ch4 + 2*f.c2h6 + 3*f.c3h8 + 4*f.c4h10 + 2*f.c2h4 + 6*f.c6h6);
+    f.h = (2/Mf)  * (f.h2 + 2*f.ch4 + 3*f.c2h6 + 4*f.c3h8 + 5*f.c4h10 + 2*f.c2h4 + 3*f.c6h6);
+    f.n = (28/Mf) * f.n2;
+    f.CO_mass = (28/Mf) * f.co;
+    f.CO2_mass= (44/Mf) * f.co2;
+    f.s = 0;
+    f.o = (32/Mf) * f.o2;
+    f.w = 0;
+    f.a = 0;
+    f.density_n = Mf / 22.4;
+    f.density_s = (273.15/288.15) * f.density_n;
+  } else {
+    // Read as % → convert to fraction
+    LIQ_FIELDS.forEach(ff => {
+      f[ff.id] = (parseFloat(document.getElementById('fi_'+ff.id)?.value)||0) / 100;
+    });
+    f.CO_mass = 0; f.CO2_mass = 0;
+    // density
+    const dEl = document.getElementById('fi_density');
+    if (dEl) f.density_liq = parseFloat(dEl.value)||fd.density||0.87;
+    else if (fd.density) f.density_liq = fd.density;
+  }
+  return {fuel:f, fuelKey:key};
+}
+
+// ══════════════════════════════════════════════════
+//  CALC FROM O2 (Eq. 5.32 rearranged)
+// ══════════════════════════════════════════════════
+function calcFromO2() {
+  const o2 = parseFloat(document.getElementById('o2_meas').value);
+  if (isNaN(o2) || o2 <= 0 || o2 >= 21) { calc(); return; }
+  // Approximate: %O2 = 21*(λ-1)/λ → λ = 21/(21-o2)
+  const lam = 21 / (21 - o2);
+  document.getElementById('lambda').value = lam.toFixed(3);
+  calc();
+}
+
+// ══════════════════════════════════════════════════
+//  MAIN CALCULATION
+// ══════════════════════════════════════════════════
+function calc() {
+  const {fuel, fuelKey} = readFuel();
+  const lambda   = parseFloat(document.getElementById('lambda').value)||1.2;
+  const t_fg     = parseFloat(document.getElementById('t_fg').value)||220;
+  const t_air    = parseFloat(document.getElementById('t_air').value)||30;
+  const rh_air   = parseFloat(document.getElementById('rh_air').value)||70;
+  const co_ppm   = parseFloat(document.getElementById('co_ppm').value)||0;
+
+  const {c,h,s,o,n,w,a} = fuel;
+  const CO_m = fuel.CO_mass||0;
+  const CO2_m= fuel.CO2_mass||0;
+
+  // ─ NCV / GCV (Eq 5.15–5.18)
+  let NCV, GCV;
+  if (fuel.type === 'gas') {
+    // Eq 5.17–5.18 — coefficients in kJ/Nm³ (from Table 5.4 per component × volume fraction)
+    // Formula: NCV = Σ(component_NCV_kJ/Nm³ × fraction) → kJ/Nm³
+    const f = fuel;
+    NCV = 10.76*f.h2 + 12.644*f.co + 35.797*f.ch4 + 64.351*f.c2h6
+        + 93.575*f.c3h8 + 123.552*f.c4h10 + 59.955*f.c2h4 + 140.342*f.c6h6; // MJ/Nm³ (×1000÷1000 cancel)
+    GCV = 12.77*f.h2  + 12.644*f.co + 39.858*f.ch4 + 70.422*f.c2h6
+        + 101.823*f.c3h8 + 134.019*f.c4h10 + 64.016*f.c2h4 + 146.371*f.c6h6; // MJ/Nm³
+    // ──────────────────────────────────────────────────────────────────────────
+    // NOTE: Morvay Eq.5.17 coefficients are in MJ/100Nm³ and formula divides by
+    // 100, giving MJ/Nm³. Multiplying by 1000 gives kJ/Nm³.
+    // Dividing by density_n [kg/Nm³] → kJ/kg
+    // So: NCV_kg [kJ/kg] = NCV [MJ/Nm³] × 1000 / density_n [kg/Nm³]
+    // ──────────────────────────────────────────────────────────────────────────
+    NCV_kg = NCV * 1000 / fuel.density_n; // kJ/kg ✓
+    GCV_kg = GCV * 1000 / fuel.density_n; // kJ/kg ✓
+  } else {
+    // Eq 5.15 — Dulong formula, result in MJ/kg → convert to kJ/kg
+    NCV = 33.9*c + 117.0*(h - o/8) + 10.5*s - 2.5*w; // MJ/kg
+    GCV = NCV + 2.5*(9*h + w);                         // MJ/kg
+    NCV_kg = NCV * 1000; GCV_kg = GCV * 1000;          // kJ/kg ✓
+    NCV_nm3 = null; GCV_nm3 = null;
+  }
+
+  // ─ Stoichiometric Air (Eq. 5.28)
+  const As = (c/12 + CO_m/28 + CO2_m/44 + s/32 + h/4 - o/32) / (0.233/32);
+  const A  = lambda * As; // actual air
+
+  // ─ Hydrogen balance (Eq. 5.22)
+  const g_H2O = h/2; // kmol/kg_F (water from H in fuel)
+
+  // ─ Bs — stoichiometric (Eq. 5.29)
+  const Bs = n/28 + As*0.767/28 + c/12 + CO_m/28 + CO2_m/44 + s/32;
+
+  // ─ vCO2_max (Eq. 5.30)
+  const vCO2_max = (c/12 + CO_m/28 + CO2_m/44) / Bs;
+
+  // ─ Actual B (kmol dry flue gas / kg_F) (Eq. 5.33)
+  const vO2 = (0.233*A/32 - (c/12 + s/32 + h/4 - o/32 + CO_m/28 - CO2_m/44)) /
+              (0.233*A/32 + 0.767*A/28 + n/28 + CO_m/28 + CO2_m/44);
+  // Exact B from Eq 5.33:
+  const B = (o/32 + 0.233*A/32 - (c/12 + CO_m/28 + CO2_m/44 + s/32 + h/4)) / vO2;
+
+  // ─ Dry flue gas composition (Eq. 5.34–5.36)
+  const vCO2 = (c/12 + CO_m/28 + CO2_m/44) / B;
+  const vSO2 = (s/32) / B;
+  const vN2  = 1 - vCO2 - vO2 - vSO2;
+
+  // ─ CO fraction from ppm
+  const vCO_dry = co_ppm / 1e6;
+
+  // ─ Molar mass of dry flue gas (Eq. 5.37)
+  const M_DFG = vN2*28 + vCO2*44 + vO2*32 + vSO2*64;
+
+  // ─ Mass of dry flue gas (Eq. 5.38)
+  const B_prime = M_DFG * B; // kg/kg_F
+
+  // ─ CO2 and SO2 emissions (Eq. 5.53–5.54)
+  const m_CO2 = vCO2 * 44 * B;
+  const m_SO2 = vSO2 * 64 * B;
+
+  // ─ Moisture in flue gas (Eq. 5.46)
+  // Saturation vapor pressure (Magnus)
+  const e_s = 0.6112 * Math.exp(17.67*t_air/(t_air+243.5)); // kPa
+  const P   = 101.325; // kPa (standard)
+  const rh  = rh_air/100;
+  const x_FA = 0.621945 * (rh*e_s) / (P - rh*e_s); // kg_w/kg_da
+  const m_w = x_FA * A + (9*h + w);
+
+  // ─ Absolute humidity of flue gas (Eq. 5.47)
+  const x_FG = m_w / B_prime;
+
+  // ─ Wet flue gas (Eq. 5.48)
+  const m_wFG = (1 + x_FG) * B_prime; // kg/kg_F
+
+  // ─ Specific heat (simplified polynomial per Eq. 5.41–5.45)
+  function cp_N2(t)  { return 1.48364e-14*t**4 - 7.97576e-11*t**3 + 1.31381e-7*t**2 + 1.42726e-5*t + 1.02694; }
+  function cp_O2(t)  { return 1.23574e-14*t**4 - 4.43486e-11*t**3 + 1.50961e-8*t**2 + 1.44682e-4*t + 9.07389e-1; }
+  function cp_CO2(t) { return -1.56925e-14*t**4 + 1.04359e-10*t**3 - 2.98914e-7*t**2 + 5.16236e-4*t + 8.20310e-1; }
+  function cp_SO2(t) { return -8.04281e-15*t**4 + 6.53115e-11*t**3 - 2.01319e-7*t**2 + 3.21094e-4*t + 6.06803e-1; }
+  function cp_H2O(t) { return 2.35461e-14*t**4 - 1.42139e-10*t**3 + 2.67351e-7*t**2 + 1.35306e-4*t + 1.85773; }
+  function cp_air(t) { return 1.0035 + 2.9e-4*t; } // simplified
+
+  // mean cp from 0 to T
+  function meanCp(cpFn, T) {
+    const n=20, dt=T/n; let s=0;
+    for(let i=0;i<n;i++) s+=cpFn((i+0.5)*dt);
+    return s/n;
+  }
+
+  const R_DFG = 8314 / M_DFG;
+  const R_N2=8314/28, R_O2=8314/32, R_CO2=8314/44, R_SO2=8314/64;
+  const cp_dfg_fg = vN2*(R_DFG/R_N2)*meanCp(cp_N2,t_fg) + vCO2*(R_DFG/R_CO2)*meanCp(cp_CO2,t_fg) + vO2*(R_DFG/R_O2)*meanCp(cp_O2,t_fg) + vSO2*(R_DFG/R_SO2)*meanCp(cp_SO2,t_fg);
+  const cp_w_fg = meanCp(cp_H2O, t_fg);
+  const cp_dfg_air = meanCp(cp_air, t_air);
+  const cp_w_air = meanCp(cp_H2O, t_air);
+
+  // Enthalpy wet FG (Eq. 5.49)
+  const h_FG = cp_dfg_fg * t_fg + x_FG*(cp_w_fg * t_fg + 2500);
+  // Enthalpy wet air (Eq. 5.50)
+  const h_A  = cp_dfg_air * t_air + x_FA*(cp_w_air * t_air + 2500);
+  // Heat loss (Eq. 5.51)
+  const Q_FG = m_wFG * h_FG - A * h_A; // kJ/kg_F
+  // FGL (Eq. 5.52)
+  const FGL = Q_FG / (GCV_kg); // fraction
+
+  // Incomplete combustion loss (q3 from CO)
+  const q3 = vCO_dry * 12644 * B / GCV_kg; // fraction
+
+  // Excess air %
+  const EA_pct = (lambda - 1) * 100;
+
+  // Mass balance check
+  const mass_in  = 1 + A; // kg fuel + kg air per kg fuel
+  const mass_out  = B_prime + m_w + a; // dry FG + moisture + ash
+  // (approximately mass_in ≈ mass_out)
+
+  // Package result
+  const R = {
+    fuel, fuelKey, lambda, EA_pct,
+    As, A, B, B_prime, Bs,
+    g_H2O, m_w, m_wFG, x_FG, x_FA,
+    vO2, vCO2, vSO2, vN2, vCO2_max, vCO_dry,
+    M_DFG, m_CO2, m_SO2,
+    NCV: NCV_kg,       // kJ/kg (same as NCV_kg, kept for compatibility)
+    GCV: GCV_kg,       // kJ/kg
+    NCV_kg, GCV_kg,    // kJ/kg — canonical, used everywhere
+    Q_FG, FGL, q3,
+    mass_in, mass_out, t_fg, t_air, rh_air,
+    c,h,s,o,n,w,a,CO_m,CO2_m,
+    density_n: fuel.density_n||null,
+    density_s: fuel.density_s||null,
+    density_liq: fuel.density_liq||null,
+    M_fuel: fuel.Mf||null,
+  };
+
+  // Save
+  cases[activeCase] = R;
+  // Update badge
+  const badge = document.getElementById('eq-case-badge');
+  if (activeCase===1) { badge.className='cbadge cbadge-1'; badge.textContent='กรณีที่ 1'; }
+  else { badge.className='cbadge cbadge-2'; badge.textContent='กรณีที่ 2'; }
+
+  renderEquation(R);
+  renderKPI(R);
+  renderStoichiometry(R);
+  renderMassBalance(R);
+  renderFGComposition(R);
+  renderCalorific(R);
+  drawSankey(R);
+  showCompareResult();
+  // Auto-refresh standards if on that tab
+  if (document.getElementById('panel-standards')?.classList.contains('on')) {
+    refreshStandards();
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER: EQUATION — 3 ขั้น: สูตร → แทนค่า → ผลลัพธ์
+// ══════════════════════════════════════════════════
+function renderEquation(R) {
+  const {fuel,As,A,B,g_H2O,vO2,vCO2,vSO2,vN2,lambda} = R;
+  const {c,h,s,o,n,CO_m,CO2_m} = R;
+  const div = document.getElementById('eq-display');
+
+  // Helper: format coefficient — show fraction form if clean, else decimal
+  function frac(num, denom) {
+    // returns HTML string like "c/12" or numeric value
+    return `<span class="eq-var">${num}</span><span class="eq-div">/</span><span class="eq-denom">${denom}</span>`;
+  }
+  function numFmt(v, dp=4) { return v.toFixed(dp); }
+
+  // ── Determine fuel type header
+  const isGas = fuel.type === 'gas';
+  const typeLabel = isGas ? 'ก๊าซ (% by Volume)' : fuel.type==='liq' ? 'ของเหลว/Liquid (% by Mass)' : 'ของแข็ง/Solid (% by Mass)';
+
+  // ── Build Stoichiometric Air equation in 3 stages
+  // Eq.(5.28): As = [c/12 + (CO)'/28 + (CO₂)'/44 + s/32 + h/4 − o/32] / (0.233/32)
+  const numer_terms = [];
+  const numer_vals  = [];
+  const result_terms= [];
+
+  if (c>0)    { numer_terms.push(`c/12`);         numer_vals.push(`${c.toFixed(4)}/12`);      result_terms.push(c/12); }
+  if (CO_m>0) { numer_terms.push(`(CO)'/28`);     numer_vals.push(`${CO_m.toFixed(4)}/28`);  result_terms.push(CO_m/28); }
+  if (CO2_m>0){ numer_terms.push(`(CO₂)'/44`);   numer_vals.push(`${CO2_m.toFixed(4)}/44`); result_terms.push(CO2_m/44); }
+  if (s>0)    { numer_terms.push(`s/32`);          numer_vals.push(`${s.toFixed(4)}/32`);      result_terms.push(s/32); }
+  if (h>0)    { numer_terms.push(`h/4`);           numer_vals.push(`${h.toFixed(4)}/4`);       result_terms.push(h/4); }
+  if (o>0)    { numer_terms.push(`− o/32`);        numer_vals.push(`− ${o.toFixed(4)}/32`);    result_terms.push(-o/32); }
+
+  // B (dry flue gas) terms from Eq.5.29 / 5.33
+  const bTermsFormula = [];
+  const bTermsVal     = [];
+  if (n>0)    { bTermsFormula.push('n/28');        bTermsVal.push(`${n.toFixed(4)}/28`); }
+  bTermsFormula.push('As × 0.767/28');  bTermsVal.push(`${As.toFixed(4)} × 0.767/28`);
+  if (c>0)    { bTermsFormula.push('c/12');        bTermsVal.push(`${c.toFixed(4)}/12`); }
+  if (CO_m>0) { bTermsFormula.push('(CO)\'/28'); bTermsVal.push(`${CO_m.toFixed(4)}/28`); }
+  if (CO2_m>0){ bTermsFormula.push('(CO₂)\'/44');bTermsVal.push(`${CO2_m.toFixed(4)}/44`); }
+  if (s>0)    { bTermsFormula.push('s/32');        bTermsVal.push(`${s.toFixed(4)}/32`); }
+
+  // Products
+  const nCO2 = vCO2*B, nH2O = g_H2O, nSO2 = vSO2*B, nO2 = vO2*B, nN2 = vN2*B;
+  const O2_in= A*0.233/32, N2_in= A*0.767/28;
+
+  // ── Fuel reactant display
+  let fuelSide = '';
+  if (isGas) {
+    const parts = [];
+    const f = fuel;
+    if(f.ch4>0)  parts.push(`<b>${(f.ch4*100).toFixed(2)}%</b> CH₄`);
+    if(f.c2h6>0) parts.push(`<b>${(f.c2h6*100).toFixed(2)}%</b> C₂H₆`);
+    if(f.c3h8>0) parts.push(`<b>${(f.c3h8*100).toFixed(2)}%</b> C₃H₈`);
+    if(f.c4h10>0)parts.push(`<b>${(f.c4h10*100).toFixed(2)}%</b> C₄H₁₀`);
+    if(f.c2h4>0) parts.push(`<b>${(f.c2h4*100).toFixed(2)}%</b> C₂H₄`);
+    if(f.c6h6>0) parts.push(`<b>${(f.c6h6*100).toFixed(2)}%</b> C₆H₆`);
+    if(f.co>0)   parts.push(`<b>${(f.co*100).toFixed(2)}%</b> CO`);
+    if(f.h2>0)   parts.push(`<b>${(f.h2*100).toFixed(2)}%</b> H₂`);
+    if(f.n2>0)   parts.push(`<b>${(f.n2*100).toFixed(2)}%</b> N₂`);
+    if(f.o2>0)   parts.push(`<b>${(f.o2*100).toFixed(2)}%</b> O₂`);
+    if(f.co2>0)  parts.push(`<b>${(f.co2*100).toFixed(2)}%</b> CO₂`);
+    fuelSide = parts.join(' + ');
+  } else {
+    const parts = [];
+    if(c>0) parts.push(`C<sub>c=${(c*100).toFixed(2)}%</sub>`);
+    if(h>0) parts.push(`H<sub>h=${(h*100).toFixed(2)}%</sub>`);
+    if(s>0) parts.push(`S<sub>s=${(s*100).toFixed(2)}%</sub>`);
+    if(o>0) parts.push(`O<sub>o=${(o*100).toFixed(2)}%</sub>`);
+    if(n>0) parts.push(`N<sub>n=${(n*100).toFixed(2)}%</sub>`);
+    fuelSide = parts.join(' + ');
+  }
+
+  const vCO2_max_pct = R.vCO2_max*100;
+
+  div.innerHTML = `
+<!-- ── ส่วนที่ 0: ข้อมูลเชื้อเพลิง ── -->
+<div class="eq-stage eq-stage-info">
+  <div class="eq-stage-hdr">📋 องค์ประกอบเชื้อเพลิง — ${typeLabel}</div>
+  <div class="eq-info-row">
+    <span class="eq-info-lbl">1 kg_fuel =</span>
+    <span class="eq-fuel-side">${fuelSide}</span>
+  </div>
+  <div class="eq-info-row" style="margin-top:4px;font-size:11px;color:var(--text3)">
+    <span>M<sub>fuel</sub> = ${isGas ? fuel.Mf.toFixed(3)+' kg/kmol' : '—'}</span>
+    <span>&nbsp;|&nbsp; c=${(c).toFixed(4)} &nbsp;h=${(h).toFixed(4)} &nbsp;s=${(s).toFixed(4)} &nbsp;o=${(o).toFixed(4)} &nbsp;n=${(n).toFixed(4)} &nbsp;w=${R.w.toFixed(4)} &nbsp;a=${R.a.toFixed(4)}</span>
+  </div>
+</div>
+
+<!-- ── ส่วนที่ 1: Stoichiometric Air ── -->
+<div class="eq-stage eq-stage-formula">
+  <div class="eq-stage-hdr">① สูตร A<sub>s</sub> — Stoichiometric Air <span class="eq-ref">Eq.(5.28)</span></div>
+  <div class="eq-formula-block">
+    <div class="eq-formula-line">
+      <span class="eq-lhs">A<sub>s</sub> =</span>
+      <span class="eq-frac-group">
+        <span class="eq-numerator">${numer_terms.join(' + ')}</span>
+        <span class="eq-fraction-bar"></span>
+        <span class="eq-denominator">0.233/32</span>
+      </span>
+      <span style="margin-left:12px;color:var(--text3);font-size:11px">kg<sub>air</sub>/kg<sub>fuel</sub></span>
+    </div>
+    <div class="eq-subst-line">
+      <span class="eq-lhs" style="color:var(--amber)">แทนค่า =</span>
+      <span class="eq-frac-group">
+        <span class="eq-numerator" style="color:var(--amber)">${numer_vals.join(' + ')}</span>
+        <span class="eq-fraction-bar"></span>
+        <span class="eq-denominator">0.233/32</span>
+      </span>
+    </div>
+    <div class="eq-result-line">
+      <span class="eq-lhs">= </span>
+      <span class="eq-result-val">${As.toFixed(5)}</span>
+      <span class="eq-unit">kg<sub>air</sub>/kg<sub>fuel</sub></span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Actual Air ── -->
+<div class="eq-stage eq-stage-formula">
+  <div class="eq-stage-hdr">② อากาศจริง A = λ × A<sub>s</sub> <span class="eq-ref">Eq.(5.31)</span></div>
+  <div class="eq-formula-block">
+    <div class="eq-formula-line">
+      <span class="eq-lhs">A =</span>
+      <span>λ × A<sub>s</sub></span>
+    </div>
+    <div class="eq-subst-line">
+      <span class="eq-lhs" style="color:var(--amber)">= </span>
+      <span style="color:var(--amber)">${lambda.toFixed(3)} × ${As.toFixed(5)}</span>
+    </div>
+    <div class="eq-result-line">
+      <span class="eq-lhs">= </span>
+      <span class="eq-result-val">${A.toFixed(5)}</span>
+      <span class="eq-unit">kg<sub>air</sub>/kg<sub>fuel</sub> &nbsp;·&nbsp; %EA = ${((lambda-1)*100).toFixed(1)}%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ส่วนที่ 2: สมการเคมีหลัก ── -->
+<div class="eq-stage eq-stage-rxn">
+  <div class="eq-stage-hdr">③ สมการการเผาไหม้หลัก <span class="eq-ref">Eq.(5.21)–(5.22)</span></div>
+
+  <div class="eq-chem-block">
+    <div class="eq-chem-hdr" style="color:var(--text3);font-size:10px;margin-bottom:6px">[ สูตรสัมประสิทธิ์ — หน่วย: kmol ต่อ 1 kg เชื้อเพลิง ]</div>
+
+    <!-- Row: C combustion -->
+    ${c>0?`<div class="eq-rxn-row">
+      <span class="eq-rxn-lbl">Carbon:</span>
+      <span class="eq-rxn-formula"><b class="eq-coef">c/12</b> C &nbsp;+&nbsp; <b class="eq-coef">c/12</b> O₂ &nbsp;⟶&nbsp; <b class="eq-coef-prod">c/12</b> CO₂</span>
+      <span class="eq-rxn-subst">แทนค่า: <b>${(c).toFixed(4)}</b>/12 = <b class="eq-num-val">${(c/12).toFixed(5)}</b> kmol</span>
+    </div>`:''}
+
+    <!-- Row: H combustion -->
+    ${h>0?`<div class="eq-rxn-row">
+      <span class="eq-rxn-lbl">Hydrogen:</span>
+      <span class="eq-rxn-formula"><b class="eq-coef">h/2</b> H₂ &nbsp;+&nbsp; <b class="eq-coef">h/4</b> O₂ &nbsp;⟶&nbsp; <b class="eq-coef-prod">h/2</b> H₂O</span>
+      <span class="eq-rxn-subst">แทนค่า: h/2 = <b>${h.toFixed(4)}</b>/2 = <b class="eq-num-val">${(h/2).toFixed(5)}</b> kmol H₂O</span>
+    </div>`:''}
+
+    <!-- Row: S combustion -->
+    ${s>0?`<div class="eq-rxn-row">
+      <span class="eq-rxn-lbl">Sulfur:</span>
+      <span class="eq-rxn-formula"><b class="eq-coef">s/32</b> S &nbsp;+&nbsp; <b class="eq-coef">s/32</b> O₂ &nbsp;⟶&nbsp; <b class="eq-coef-prod">s/32</b> SO₂</span>
+      <span class="eq-rxn-subst">แทนค่า: <b>${s.toFixed(4)}</b>/32 = <b class="eq-num-val">${(s/32).toFixed(6)}</b> kmol SO₂</span>
+    </div>`:''}
+
+    <!-- Row: Excess O2 from air -->
+    <div class="eq-rxn-row">
+      <span class="eq-rxn-lbl">O₂ เกิน:</span>
+      <span class="eq-rxn-formula"><b class="eq-coef">(λ−1)×A<sub>s</sub>×0.233/32</b> O₂ &nbsp;⟶&nbsp; <b class="eq-coef-prod">ไอเสีย O₂</b></span>
+      <span class="eq-rxn-subst">= <b class="eq-num-val">${(vO2*B).toFixed(5)}</b> kmol</span>
+    </div>
+
+    <!-- Row: N2 pass-through -->
+    <div class="eq-rxn-row">
+      <span class="eq-rxn-lbl">N₂ (ผ่าน):</span>
+      <span class="eq-rxn-formula"><b class="eq-coef">n/28 + A×0.767/28</b> N₂ &nbsp;⟶&nbsp; <b class="eq-coef-prod">N₂</b></span>
+      <span class="eq-rxn-subst">= <b class="eq-num-val">${(vN2*B).toFixed(5)}</b> kmol</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ส่วนที่ 3: สมการรวม (Balanced) ── -->
+<div class="eq-stage eq-stage-balanced">
+  <div class="eq-stage-hdr">④ สมการดุลรวม (Balanced Equation) <span class="eq-ref">Eq.(5.21)</span></div>
+  <div class="eq-balanced-wrap">
+
+    <div class="eq-bal-section">
+      <div class="eq-bal-label">REACTANTS (สารตั้งต้น)</div>
+      <div class="eq-bal-line" style="color:var(--text)">
+        <span class="eq-bal-coef">1</span> <span class="eq-bal-mol">kg เชื้อเพลิง</span>
+        <span class="eq-bal-plus">+</span>
+        <span class="eq-bal-coef">${O2_in.toFixed(4)}</span> <span class="eq-bal-mol eq-mol-air">O₂</span>
+        <span class="eq-bal-plus">+</span>
+        <span class="eq-bal-coef">${N2_in.toFixed(4)}</span> <span class="eq-bal-mol eq-mol-air">N₂</span>
+        <span class="eq-bal-note">[จากอากาศ ${A.toFixed(4)} kg_air/kg_F]</span>
+      </div>
+    </div>
+
+    <div class="eq-arrow-big">⟹</div>
+
+    <div class="eq-bal-section">
+      <div class="eq-bal-label">PRODUCTS (ผลิตภัณฑ์)</div>
+      <div class="eq-bal-line">
+        ${nCO2>0?`<span class="eq-bal-coef eq-coef-val">${nCO2.toFixed(4)}</span> <span class="eq-bal-mol eq-mol-prod">CO₂</span> <span class="eq-bal-plus">+</span>`:''}
+        ${nH2O>0?`<span class="eq-bal-coef eq-coef-val">${nH2O.toFixed(4)}</span> <span class="eq-bal-mol eq-mol-prod">H₂O</span> <span class="eq-bal-plus">+</span>`:''}
+        ${nSO2>0?`<span class="eq-bal-coef eq-coef-val">${nSO2.toFixed(5)}</span> <span class="eq-bal-mol eq-mol-prod">SO₂</span> <span class="eq-bal-plus">+</span>`:''}
+        ${nO2>0?`<span class="eq-bal-coef eq-coef-val">${nO2.toFixed(4)}</span> <span class="eq-bal-mol eq-mol-prod">O₂</span> <span class="eq-bal-plus">+</span>`:''}
+        <span class="eq-bal-coef eq-coef-val">${nN2.toFixed(4)}</span> <span class="eq-bal-mol eq-mol-prod">N₂</span>
+        <span class="eq-bal-note">[หน่วย: kmol/kg_fuel]</span>
+      </div>
+    </div>
+
+  </div>
+  <div style="margin-top:10px;padding:8px 12px;background:var(--bg3);border-radius:6px;display:flex;flex-wrap:wrap;gap:14px;font-size:11px;font-family:var(--mono)">
+    <span>B (dry FG) = <b style="color:var(--blue)">${B.toFixed(5)}</b> kmol/kg_F</span>
+    <span>%CO₂ (dry) = <b style="color:var(--teal)">${(vCO2*100).toFixed(3)}</b>%</span>
+    <span>%O₂ (dry) = <b style="color:var(--red)">${(vO2*100).toFixed(3)}</b>%</span>
+    <span>%CO₂_max = <b style="color:var(--purple)">${(vCO2_max_pct).toFixed(3)}</b>%</span>
+    <span>%N₂ (dry) = <b style="color:var(--text2)">${(vN2*100).toFixed(3)}</b>%</span>
+    ${nSO2>0?`<span>%SO₂ = <b style="color:var(--amber)">${(vSO2*100).toFixed(4)}</b>%</span>`:''}
+  </div>
+</div>`;
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER: KPI
+// ══════════════════════════════════════════════════
+function renderKPI(R) {
+  document.getElementById('kpi-section').style.display = 'block';
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi blue">
+      <div class="kpi-lbl">Stoich. Air (As)</div>
+      <div class="kpi-val" style="color:var(--blue);font-size:20px">${R.As.toFixed(3)}</div>
+      <div class="kpi-unit">kg_air / kg_fuel</div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-lbl">Actual Air (A)</div>
+      <div class="kpi-val" style="color:var(--amber);font-size:20px">${R.A.toFixed(3)}</div>
+      <div class="kpi-unit">kg_air / kg_fuel · λ=${R.lambda.toFixed(2)}</div>
+    </div>
+    <div class="kpi teal">
+      <div class="kpi-lbl">NCV</div>
+      <div class="kpi-val" style="color:var(--teal);font-size:20px">${(R.NCV_kg/1000).toFixed(2)}</div>
+      <div class="kpi-unit">MJ / kg_fuel (Eq.5.15)</div>
+    </div>
+    <div class="kpi purple">
+      <div class="kpi-lbl">Flue Gas Loss (q₂)</div>
+      <div class="kpi-val" style="color:var(--purple);font-size:20px">${(R.FGL*100).toFixed(1)}</div>
+      <div class="kpi-unit">% (Eq.5.52)</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-lbl">%O₂ in Dry FG</div>
+      <div class="kpi-val" style="color:var(--red);font-size:20px">${(R.vO2*100).toFixed(2)}</div>
+      <div class="kpi-unit">% vol (dry) Eq.5.27</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-lbl">%CO₂ in Dry FG</div>
+      <div class="kpi-val" style="color:var(--orange);font-size:20px">${(R.vCO2*100).toFixed(2)}</div>
+      <div class="kpi-unit">% vol (dry) Eq.5.34</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-lbl">CO₂ Emission</div>
+      <div class="kpi-val" style="color:var(--blue);font-size:20px">${R.m_CO2.toFixed(3)}</div>
+      <div class="kpi-unit">kg_CO₂ / kg_fuel (Eq.5.53)</div>
+    </div>
+    <div class="kpi ${R.EA_pct<30?'teal':'amber'}">
+      <div class="kpi-lbl">Excess Air</div>
+      <div class="kpi-val" style="color:var(--${R.EA_pct<30?'teal':'amber'});font-size:20px">${R.EA_pct.toFixed(0)}</div>
+      <div class="kpi-unit">% (λ−1)×100</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER: STOICHIOMETRY TABLE
+// ══════════════════════════════════════════════════
+function renderStoichiometry(R) {
+  document.getElementById('stoi-card').style.display = 'block';
+  const {c,h,s,o,n,w,a,CO_m,CO2_m,B,A,vO2,vCO2,vSO2,vN2,g_H2O} = R;
+  const rows = [
+    {name:'C (คาร์บอน)',    M:12,  fuel_kmol: c/12,   air:0,          react:-(c/12)*32,   exhaust:0, pct:0, color:'amber'},
+    {name:'H (ไฮโดรเจน)', M:2,   fuel_kmol: h/2,    air:0,          react:-(h/4)*32,    exhaust:0, pct:0, color:'amber'},
+    {name:'S (กำมะถัน)',   M:32,  fuel_kmol: s/32,   air:0,          react:-(s/32)*32,   exhaust:0, pct:0, color:'warn'},
+    {name:'O (ออกซิเจนในเชื้อเพลิง)', M:32, fuel_kmol: o/32, air:0, react:+(o/32)*32/2, exhaust:0, pct:0, color:'teal'},
+    {name:'CO (ใน fuel)',  M:28,  fuel_kmol: CO_m/28,air:0,          react:-(CO_m/28)*16,exhaust:0, pct:0, color:'amber'},
+    {name:'CO₂ (ใน fuel)',M:44,  fuel_kmol:CO2_m/44,air:0,          react:0,             exhaust:CO2_m/44, pct:(CO2_m/44)/B*100, color:'purple'},
+    {name:'N (ใน fuel)',   M:28,  fuel_kmol: n/28,   air:0,          react:0,             exhaust:n/28,     pct:(n/28)/B*100, color:'blue'},
+    {name:'───', M:'', fuel_kmol:'', air:'', react:'', exhaust:'', pct:'', color:''},
+    {name:'O₂ (จากอากาศ)',M:32,  fuel_kmol:0,       air: A*0.233/32, react:-(A*0.233/32), exhaust:vO2*B,  pct:vO2*100, color:'red'},
+    {name:'N₂ (จากอากาศ)',M:28,  fuel_kmol:0,       air: A*0.767/28, react:0,             exhaust:vN2*B,  pct:vN2*100, color:'blue'},
+    {name:'───', M:'', fuel_kmol:'', air:'', react:'', exhaust:'', pct:'', color:''},
+    {name:'✦ CO₂ (ผลิต)', M:44,  fuel_kmol:0,       air:0,          react:+(c/12+CO_m/28+CO2_m/44), exhaust:vCO2*B, pct:vCO2*100, color:'teal', bold:true},
+    {name:'✦ H₂O (ผลิต)', M:18,  fuel_kmol:0,       air:0,          react:+(h/2),         exhaust:g_H2O, pct:0, note:'wet', color:'teal', bold:true},
+    {name:'✦ SO₂ (ผลิต)', M:64,  fuel_kmol:0,       air:0,          react:+(s/32),         exhaust:vSO2*B, pct:vSO2*100, color:'teal', bold:true},
+  ];
+  document.getElementById('stoi-body').innerHTML = rows.map(r => {
+    if (r.name.startsWith('─')) return `<tr><td colspan="7" style="background:var(--bg4);height:1px;padding:0"></td></tr>`;
+    const fmt = v => typeof v === 'number' ? v.toFixed(5) : (v||'');
+    const bold = r.bold ? 'font-weight:700;' : '';
+    const col  = r.color ? `color:var(--${r.color});` : '';
+    return `<tr>
+      <td class="mol-name" style="${bold}${col}">${r.name}</td>
+      <td>${r.M}</td>
+      <td>${fmt(r.fuel_kmol)}</td>
+      <td>${fmt(r.air)}</td>
+      <td>${fmt(r.react)}</td>
+      <td class="${r.bold?'highlight':''}">${fmt(r.exhaust)}</td>
+      <td>${r.pct?r.pct.toFixed(2):''}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER: MASS BALANCE
+// ══════════════════════════════════════════════════
+function renderMassBalance(R) {
+  document.getElementById('mass-card').style.display = 'block';
+  const {As,A,B,B_prime,m_w,m_wFG,mass_in,mass_out,fuel,a} = R;
+  const rows = [
+    ['หัวข้อ INPUT','','','',''],
+    ['เชื้อเพลิง (ต่อ 1 kg_fuel)', 'Eq.5.1', '1.0000', 'kg/kg_F', 'hl'],
+    ['อากาศ (Actual)', 'Eq.5.32', A.toFixed(4), 'kg_air/kg_F', 'hl'],
+    ['─ รวม Input', '', (1+A).toFixed(4), 'kg', 'good'],
+    ['','','','',''],
+    ['หัวข้อ OUTPUT','','','',''],
+    ['แห้งไอเสีย (Dry FG)', 'B\'=M_DFG×B (Eq.5.38)', B_prime.toFixed(4), 'kg/kg_F', 'hl'],
+    ['ความชื้นในไอเสีย', 'Eq.5.46', m_w.toFixed(4), 'kg_H₂O/kg_F', ''],
+    ['ขี้เถ้า (Ash)', 'ส่วนประกอบเชื้อเพลิง', a.toFixed(4), 'kg/kg_F', ''],
+    ['─ รวม Output', '', (B_prime+m_w+a).toFixed(4), 'kg', 'good'],
+    ['ดุลมวล Error', '|(Input−Output)/Input|', (Math.abs(mass_in-(B_prime+m_w+a))/mass_in*100).toFixed(2), '%', Math.abs(mass_in-(B_prime+m_w+a))/mass_in*100<1?'good':'bad'],
+    ['','','','',''],
+    ['ไอเสียชื้น (Wet FG)', 'Eq.5.48', R.m_wFG.toFixed(4), 'kg/kg_F', ''],
+    ['โมลไอเสียแห้ง (B)', 'Eq.5.33', B.toFixed(5), 'kmol/kg_F', ''],
+    ['โมลมวลไอเสียแห้ง (M_DFG)', 'Eq.5.37', R.M_DFG.toFixed(3), 'kg/kmol', ''],
+  ];
+  document.getElementById('mass-body').innerHTML = rows.map(r => {
+    if (!r[0]) return '';
+    if (!r[1] && !r[2]) return `<tr><td colspan="4" style="background:var(--bg4);font-size:10px;color:var(--text3);padding:4px 10px;font-family:var(--mono)">${r[0]}</td></tr>`;
+    return `<tr><td>${r[0]}</td><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${r[1]}</td><td class="${r[4]} hl" style="font-family:var(--mono)">${r[2]}</td><td style="font-family:var(--mono);color:var(--text3)">${r[3]}</td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER: FLUE GAS
+// ══════════════════════════════════════════════════
+function renderFGComposition(R) {
+  document.getElementById('fg-card').style.display = 'block';
+  const {vCO2,vO2,vSO2,vN2,vCO2_max,vCO_dry,x_FG} = R;
+  const rows = [
+    ['CO₂', 'Eq.5.34: (c/12+CO\'/28+CO₂\'/44)/B', (vCO2*100).toFixed(3), vCO2>0.1?'good':vCO2>0.05?'warn':''],
+    ['O₂',  'Eq.5.27', (vO2*100).toFixed(3), vO2<0.05?'good':vO2<0.1?'warn':'bad'],
+    ['SO₂', 'Eq.5.35: (s/32)/B', (vSO2*100).toFixed(4), vSO2>0?'warn':''],
+    ['N₂',  'Eq.5.36: 1−CO₂−O₂−SO₂', (vN2*100).toFixed(3), ''],
+    ['CO',  'จากค่า ppm ที่วัด', (vCO_dry*100*10000).toFixed(1)+' ppm', vCO_dry>1e-4?'bad':'good'],
+    ['─','─','─',''],
+    ['CO₂_max (λ=1.0)', 'Eq.5.30: vCO₂_max', (vCO2_max*100).toFixed(3), 'hl'],
+    ['ความชื้น FG (x_FG)', 'Eq.5.47', (x_FG*1000).toFixed(2)+' g/kg_dryFG', ''],
+  ];
+  document.getElementById('fg-body').innerHTML = rows.map(r => {
+    if (r[0]==='─') return '';
+    return `<tr><td class="hl">${r[0]}</td><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${r[1]}</td><td class="${r[3]}" style="font-family:var(--mono)">${r[2]}</td><td style="font-size:10px;color:var(--text3)">% vol (dry)</td></tr>`;
+  }).join('');
+  document.getElementById('fg-note').textContent =
+    `CO₂_max = ${(vCO2_max*100).toFixed(2)}% (ที่ λ=1.0, Stoichiometric) | CO₂_actual = ${(vCO2*100).toFixed(2)}% | O₂_actual = ${(vO2*100).toFixed(2)}%`;
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER: CALORIFIC + FGL
+// ══════════════════════════════════════════════════
+function renderCalorific(R) {
+  document.getElementById('cal-card').style.display = 'block';
+  const fglPct = R.FGL*100;
+  const rows = [
+    ['NCV (ค่าความร้อนต่ำ)', 'Eq.5.15 (Dulong)', (R.NCV_kg/1000).toFixed(3), 'MJ/kg_F', ''],
+    ['GCV (ค่าความร้อนสูง)', 'Eq.5.16: NCV+2.5(9h+w)', (R.GCV_kg/1000).toFixed(3), 'MJ/kg_F', ''],
+    ['ผลต่าง GCV−NCV', '= 2.5(9h+w)', ((R.GCV_kg-R.NCV_kg)/1000).toFixed(3), 'MJ/kg_F', ''],
+    ['', '', '', '', ''],
+    ['Q_FG (Heat loss with wet FG)', 'Eq.5.51', R.Q_FG.toFixed(2), 'kJ/kg_F', ''],
+    ['Flue Gas Loss (q₂)', 'Eq.5.52: Q_FG/GCV', fglPct.toFixed(2), '%', fglPct<10?'good':fglPct<15?'warn':'bad'],
+    ['q₃ (Incomplete Combustion)', 'CO loss', (R.q3*100).toFixed(3), '%', R.q3>0.01?'bad':'good'],
+    ['Boiler Efficiency (ประมาณ)', '100 − q₂ − q₃', (100-fglPct-R.q3*100).toFixed(1), '%', (100-fglPct-R.q3*100)>85?'good':'warn'],
+    ['', '', '', '', ''],
+    ['CO₂ Emission', 'Eq.5.53: vCO₂×44×B', R.m_CO2.toFixed(4), 'kg_CO₂/kg_F', ''],
+    ['SO₂ Emission', 'Eq.5.54: vSO₂×64×B', R.m_SO2.toFixed(5), 'kg_SO₂/kg_F', R.m_SO2>0.01?'warn':'good'],
+    ['H₂O Emission', 'Eq.5.46', R.m_w.toFixed(4), 'kg_H₂O/kg_F', ''],
+  ];
+  document.getElementById('cal-body').innerHTML = rows.map(r => {
+    if (!r[0]) return '';
+    return `<tr><td>${r[0]}</td><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${r[1]}</td><td class="hl ${r[4]}" style="font-family:var(--mono)">${r[2]}</td><td style="font-family:var(--mono);color:var(--text3)">${r[3]}</td><td><span class="badge-${r[4]||'na'}">${r[4]==='good'?'✅ ดี':r[4]==='warn'?'⚠ สังเกต':r[4]==='bad'?'❌ เกิน':''}</span></td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  DRAW SANKEY (Energy flow)
+// ══════════════════════════════════════════════════
+function drawSankey(R) {
+  document.getElementById('sankey-card').style.display = 'block';
+  const canvas = document.getElementById('sankey-canvas');
+  const ctx    = canvas.getContext('2d');
+  const dpr    = window.devicePixelRatio||1;
+  const W = canvas.offsetWidth||700, H=140;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+
+  const GCV = R.GCV_kg/1000;
+  const fgl = R.FGL*100;
+  const q3  = R.q3*100;
+  const eta = 100-fgl-q3;
+
+  ctx.fillStyle='#21262d'; ctx.fillRect(0,0,W,H);
+  const bh=H-40, by=20;
+
+  const segs = [
+    {label:'ความร้อนที่ใช้งาน', pct:eta, color:'#2ea043'},
+    {label:`q₂ FG Loss ${fgl.toFixed(1)}%`, pct:fgl, color:'#d29922'},
+    {label:`q₃ CO ${q3.toFixed(2)}%`, pct:q3, color:'#f85149'},
+  ];
+
+  // Input bar
+  const inW = 60;
+  ctx.fillStyle='#388bfd';
+  ctx.fillRect(0, by, inW, bh);
+  ctx.fillStyle='#e6edf3'; ctx.font='bold 11px IBM Plex Mono'; ctx.textAlign='center';
+  ctx.fillText('GCV', inW/2, by+bh/2+4);
+  ctx.fillText((GCV.toFixed(2)+' MJ/kg'), inW/2, by+bh/2+18);
+
+  let x = inW+20;
+  const totalW = W-inW-40;
+  segs.forEach(seg => {
+    const sw = totalW * seg.pct/100;
+    ctx.fillStyle = seg.color;
+    ctx.beginPath();
+    ctx.roundRect(x, by, sw, bh, [0,4,4,0]);
+    ctx.fill();
+    if (sw > 50) {
+      ctx.fillStyle='#0d1117'; ctx.font='bold 10px IBM Plex Mono'; ctx.textAlign='center';
+      ctx.fillText(seg.pct.toFixed(1)+'%', x+sw/2, by+bh/2);
+      if (sw > 80) ctx.fillText(seg.label.split(' ')[0], x+sw/2, by+bh/2+14);
+    }
+    x += sw;
+  });
+
+  // Legend
+  const lx = inW+20, ly = by+bh+10;
+  segs.forEach((seg,i) => {
+    ctx.fillStyle=seg.color; ctx.fillRect(lx+i*180, ly, 10, 8);
+    ctx.fillStyle='#8b949e'; ctx.font='9px IBM Plex Mono'; ctx.textAlign='left';
+    ctx.fillText(seg.label, lx+i*180+14, ly+8);
+  });
+  ctx.fillStyle='#388bfd'; ctx.fillRect(lx+3*180||lx+540, ly, 10, 8);
+  ctx.fillStyle='#8b949e'; ctx.fillText(`Boiler η ≈ ${eta.toFixed(1)}%`, lx+3*180+14||lx+554, ly+8);
+}
+
+// ══════════════════════════════════════════════════
+//  COMPARE
+// ══════════════════════════════════════════════════
+function showCompareResult() {
+  const R1 = cases[1], R2 = cases[2];
+  const statusEl = document.getElementById('compare-status');
+  const resultEl = document.getElementById('compare-result');
+
+  if (!R1 && !R2) return;
+  if ((!R1 || !R2)) {
+    statusEl.style.display='block';
+    const missing = !R1 ? 'กรณีที่ 1' : 'กรณีที่ 2';
+    statusEl.textContent = `⚠️ ยังขาด ${missing} — กรุณากด "💾 บันทึกกรณีนี้" หลังคำนวณแต่ละกรณี`;
+    resultEl.style.display='none';
+    return;
+  }
+
+  statusEl.style.display='none';
+  resultEl.style.display='block';
+
+  // KPI cards
+  const kpiRows = [
+    {k:'Stoich. Air (As)', u:'kg/kg_F', v1:R1.As, v2:R2.As},
+    {k:'Actual Air (A)', u:'kg/kg_F', v1:R1.A, v2:R2.A},
+    {k:'NCV', u:'MJ/kg', v1:R1.NCV_kg/1000, v2:R2.NCV_kg/1000},
+    {k:'GCV', u:'MJ/kg', v1:R1.GCV_kg/1000, v2:R2.GCV_kg/1000},
+  ];
+  document.getElementById('cmp-kpi-panel').innerHTML = kpiRows.map(r => {
+    const delta = r.v2-r.v1;
+    return `
+    <div class="cmp-col">
+      <div class="cmp-hdr">${r.k} [${r.u}]</div>
+      <div class="cmp-row"><span class="cmp-key" style="color:var(--case1)">กรณีที่ 1</span><span style="font-family:var(--mono)">${r.v1.toFixed(4)}</span></div>
+      <div class="cmp-row"><span class="cmp-key" style="color:var(--case2)">กรณีที่ 2</span><span style="font-family:var(--mono)">${r.v2.toFixed(4)}</span></div>
+      <div class="cmp-row" style="border-top:1px solid var(--border2)"><span class="cmp-key">Δ (2−1)</span><span style="font-family:var(--mono);color:${delta>=0?'var(--teal)':'var(--red)'}">
+        ${delta>=0?'+':''}${delta.toFixed(4)}
+      </span></div>
+    </div>`;
+  }).join('');
+
+  // Detailed comparison table
+  const rows = [
+    {p:'เชื้อเพลิง', u:'−', v1:R1.fuel.name, v2:R2.fuel.name, raw:false},
+    {p:'λ (Excess Air Factor)', u:'−', v1:R1.lambda, v2:R2.lambda, raw:true},
+    {p:'Excess Air %', u:'%', v1:R1.EA_pct, v2:R2.EA_pct, raw:true},
+    {p:'A_s (Stoichiometric Air)', u:'kg/kg_F', v1:R1.As, v2:R2.As, raw:true},
+    {p:'A (Actual Air)', u:'kg/kg_F', v1:R1.A, v2:R2.A, raw:true},
+    {p:'B (kmol dry FG)', u:'kmol/kg_F', v1:R1.B, v2:R2.B, raw:true},
+    {p:'B\' (mass dry FG)', u:'kg/kg_F', v1:R1.B_prime, v2:R2.B_prime, raw:true},
+    {p:'NCV', u:'MJ/kg_F', v1:R1.NCV_kg/1000, v2:R2.NCV_kg/1000, raw:true},
+    {p:'GCV', u:'MJ/kg_F', v1:R1.GCV_kg/1000, v2:R2.GCV_kg/1000, raw:true},
+    {p:'%CO₂ (dry)', u:'%vol', v1:R1.vCO2*100, v2:R2.vCO2*100, raw:true},
+    {p:'%O₂ (dry)', u:'%vol', v1:R1.vO2*100, v2:R2.vO2*100, raw:true},
+    {p:'%SO₂ (dry)', u:'%vol', v1:R1.vSO2*100, v2:R2.vSO2*100, raw:true},
+    {p:'%N₂ (dry)', u:'%vol', v1:R1.vN2*100, v2:R2.vN2*100, raw:true},
+    {p:'CO₂_max (λ=1)', u:'%', v1:R1.vCO2_max*100, v2:R2.vCO2_max*100, raw:true},
+    {p:'Flue Gas Loss q₂', u:'%', v1:R1.FGL*100, v2:R2.FGL*100, raw:true, inv:true},
+    {p:'Boiler η (approx)', u:'%', v1:100-R1.FGL*100, v2:100-R2.FGL*100, raw:true},
+    {p:'CO₂ Emission', u:'kg/kg_F', v1:R1.m_CO2, v2:R2.m_CO2, raw:true, inv:true},
+    {p:'SO₂ Emission', u:'kg/kg_F', v1:R1.m_SO2, v2:R2.m_SO2, raw:true, inv:true},
+    {p:'H₂O in FG', u:'kg/kg_F', v1:R1.m_w, v2:R2.m_w, raw:true},
+    {p:'T_flue gas', u:'°C', v1:R1.t_fg, v2:R2.t_fg, raw:true, inv:true},
+  ];
+
+  document.getElementById('cmp-body').innerHTML = rows.map(r => {
+    if (!r.raw) return `<tr><td>${r.p}</td><td>−</td><td class="c1">${r.v1}</td><td class="c2">${r.v2}</td><td>−</td><td>−</td></tr>`;
+    const delta = r.v2 - r.v1;
+    const deltaPct = r.v1 !== 0 ? (delta/Math.abs(r.v1)*100) : 0;
+    const good = r.inv ? delta<=0 : delta>=0;
+    const col  = delta===0 ? '' : (good ? 'good' : 'bad');
+    return `<tr>
+      <td>${r.p}</td>
+      <td style="font-family:var(--mono);color:var(--text3)">${r.u}</td>
+      <td class="c1" style="font-family:var(--mono)">${r.v1.toFixed(4)}</td>
+      <td class="c2" style="font-family:var(--mono)">${r.v2.toFixed(4)}</td>
+      <td class="${col}" style="font-family:var(--mono)">${delta>=0?'+':''}${delta.toFixed(4)}</td>
+      <td class="${col}" style="font-family:var(--mono)">${delta>=0?'+':''}${deltaPct.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Fuel info
+  function fuelInfo(R) {
+    const {fuel} = R;
+    const items = [
+      {k:'ชื่อเชื้อเพลิง', v: fuel.name},
+      {k:'ประเภท', v: fuel.type==='gas'?'ก๊าซ (Gas)':fuel.type==='liq'?'ของเหลว (Liquid)':'ของแข็ง (Solid)'},
+      {k:'Carbon (c)', v: R.c.toFixed(4)},
+      {k:'Hydrogen (h)', v: R.h.toFixed(4)},
+      {k:'Sulfur (s)', v: R.s.toFixed(4)},
+      {k:'Oxygen (o)', v: R.o.toFixed(4)},
+      {k:'Moisture (w)', v: R.w.toFixed(4)},
+      {k:'Ash (a)', v: R.a.toFixed(4)},
+    ];
+    return items.map(i => `<div class="cmp-row"><span class="cmp-key">${i.k}</span><span style="font-family:var(--mono);font-size:11px">${i.v}</span></div>`).join('');
+  }
+  document.getElementById('cmp-fuel1').innerHTML = fuelInfo(R1);
+  document.getElementById('cmp-fuel2').innerHTML = fuelInfo(R2);
+
+  // Emission table
+  const emRows = [
+    {g:'CO₂', u:'kg/kg_F', v1:R1.m_CO2, v2:R2.m_CO2},
+    {g:'SO₂', u:'kg/kg_F', v1:R1.m_SO2, v2:R2.m_SO2},
+    {g:'H₂O', u:'kg/kg_F', v1:R1.m_w, v2:R2.m_w},
+  ];
+  document.getElementById('emission-body').innerHTML = emRows.map(r => {
+    const delta = r.v2-r.v1;
+    const dpct  = r.v1>0?(delta/r.v1*100):0;
+    return `<tr><td class="hl">${r.g}</td><td>${r.u}</td>
+      <td class="c1" style="font-family:var(--mono)">${r.v1.toFixed(5)}</td>
+      <td class="c2" style="font-family:var(--mono)">${r.v2.toFixed(5)}</td>
+      <td class="${delta<=0?'good':'bad'}" style="font-family:var(--mono)">${delta>=0?'+':''}${dpct.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  STANDARDS ENGINE — 6 International Standards
+//  อ้างอิง: EnPI_Steam_Boiler_TripleE-v51.html
+//  + Morvay & Gvozdenac Toolbox 5
+// ══════════════════════════════════════════════════
+
+let stdResults = null;
+
+function refreshStandards() {
+  const R = cases[activeCase];
+  if (!R) { return; }
+  stdResults = computeAllStandards(R);
+  renderStdSummary(stdResults);
+  showStdDetail('asme');
+}
+
+function renderStandards(R) {
+  stdResults = computeAllStandards(R);
+  renderStdSummary(stdResults);
+  showStdDetail('asme');
+}
+
+// ── Polynomial Cp for EN 12953-11 Annex A
+function cpGdo_EN(t, xCO2) {
+  // EN 12953-11: Cp_dry_flue_gas polynomial (kJ/kg·K)
+  const cp_dry = 1.0045 + (0.000105 + 0.0003*xCO2)*t;
+  return cp_dry;
+}
+function cp_interval_EN(Ta, Tg, xCO2) {
+  // Mean Cp between Ta and Tg
+  const n=20, dt=(Tg-Ta)/n; let s=0;
+  for(let i=0;i<n;i++) s+=cpGdo_EN(Ta+(i+0.5)*dt, xCO2);
+  return s/n;
+}
+
+// ── Siegert constants for BS / IS
+function siegertConsts(c, h, s, o, HHV_MJ) {
+  const Qgr = HHV_MJ;
+  const Kgr = Qgr > 0 ? (0.255 * c*100) / Qgr : 0;
+  const denom_co2 = (c*100) + 0.375*(s*100) + 2.373*((h*100) - 0.125*(o*100));
+  const CO2max = denom_co2 > 0 ? (21*(c*100)) / denom_co2 : 0;
+  return {Qgr, Kgr, CO2max};
+}
+
+function computeAllStandards(R) {
+  const {c, h, s, o, n, w: m, a, A, B, B_prime, vO2, vCO2, vSO2, vN2, g_H2O, m_CO2, m_SO2, m_w,
+    NCV_kg, GCV_kg, t_fg: Tg, t_air: Ta, lambda} = R;
+
+  // ── UNIT NOTE ─────────────────────────────────────────────────────────
+  // NCV_kg and GCV_kg are ALWAYS in kJ/kg (fixed at source in calc())
+  // Gas:  NCV_kg = NCV(MJ/Nm³)×1000 / density_n(kg/Nm³) → kJ/kg ✓
+  // Solid/Liquid: NCV_kg = NCV(MJ/kg)×1000 → kJ/kg ✓
+  // ─────────────────────────────────────────────────────────────────────
+  const HHV = GCV_kg; // kJ/kg
+  const LHV = NCV_kg; // kJ/kg
+
+  // Operating inputs from UI
+  const RadLoss = parseFloat(document.getElementById('std_rad')?.value)||2.0;
+  const UnmLoss = parseFloat(document.getElementById('std_unm')?.value)||0.0;
+  const w_air   = parseFloat(document.getElementById('std_wair')?.value)||0.012;
+  const RatedMW = parseFloat(document.getElementById('std_mw')?.value)||5.0;
+  const O2  = vO2 * 100;            // % vol in dry FG
+  const COppm = R.vCO_dry * 1e6;
+  const CO_pct = COppm / 1e4;       // % CO in FG
+
+  // ── Mass of dry flue gas components (kg/kg_F)
+  const m_N2  = vN2  * R.M_DFG * B;
+  const m_O2r = vO2  * R.M_DFG * B;
+  const mass_DryGas = B_prime; // kg/kg_F
+  const mass_H2O    = m_w;     // kg/kg_F (total moisture in FG)
+  const W_wA  = w_air * A;     // moisture from air kg/kg_F
+
+  // ── Cp dry flue gas (simplified — ASME/JIS/BS use ~1.01 kJ/kg·K)
+  const Cp_gas = 1.01 + 0.0001*(Tg-Ta); // simplified mean
+
+  // ── Siegert constants (Qgr must be in MJ/kg for BS formula)
+  const HHV_MJ = HHV / 1000; // MJ/kg
+  const {Qgr, Kgr, CO2max} = siegertConsts(c, h, s, o, HHV_MJ);
+  const Kco = (R.fuel.type==='gas') ? 40 : (R.fuel.type==='liq' ? 60 : 65);
+  const CO2_act = CO2max * ((21 - O2) / 21);
+
+  // ═══════════════════════════════
+  //  1. ASME PTC4 : 2008
+  //  Indirect Loss Method
+  // ═══════════════════════════════
+  // L1: Dry Flue Gas Loss = W_dg × Cp × (Tg−Ta)  [kJ/kg]
+  const asme_L1 = mass_DryGas * Cp_gas * (Tg - Ta);
+  // L2: Moisture Loss from fuel H + fuel moisture  [kJ/kg]
+  const asme_L2_H2  = (9*h) * (2442 + 1.88*(Tg - Ta));  // from H in fuel
+  const asme_L2_m   = m     * (2442 + 1.88*(Tg - Ta));  // from fuel moisture
+  const asme_L2     = asme_L2_H2 + asme_L2_m;
+  // L3: Air moisture loss  [kJ/kg]
+  const asme_L3 = W_wA * 1.88 * (Tg - Ta);
+  // L4: Unburned CO loss  [kJ/kg]
+  const asme_L4 = mass_DryGas * (COppm / 1e6) * 10100;
+
+  const pL1_asme_H = (asme_L1/HHV)*100,  pL1_asme_L = (asme_L1/LHV)*100;
+  const pL2_asme_H = (asme_L2/HHV)*100,  pL2_asme_L = (asme_L2/LHV)*100;
+  const pL3_asme_H = (asme_L3/HHV)*100,  pL3_asme_L = (asme_L3/LHV)*100;
+  const pL4_asme_H = (asme_L4/HHV)*100,  pL4_asme_L = (asme_L4/LHV)*100;
+  const eff_asme_H = 100 - pL1_asme_H - pL2_asme_H - pL3_asme_H - pL4_asme_H - RadLoss - UnmLoss;
+  const eff_asme_L = 100 - pL1_asme_L - pL2_asme_L - pL3_asme_L - pL4_asme_L - RadLoss - UnmLoss;
+
+  // ═══════════════════════════════
+  //  2. BS 845-1 : 1987 (Siegert)
+  //  Concise Procedure
+  // ═══════════════════════════════
+  // L1 = Kgr×(Tg−Ta) / %CO2_act
+  const bs1_L1 = CO2_act > 0 ? (Kgr * (Tg - Ta)) / CO2_act : 0;
+  // L2 = (M+9H)×(2488+2.1Tg−4.2Ta) / (1000×Qgr)
+  const bs1_L2 = Qgr > 0 ? ((m*100 + 9*(h*100)) * (2488 + 2.1*Tg - 4.2*Ta)) / (1000 * Qgr) : 0;
+  // L3 = Kco×%CO / (%CO2+%CO)
+  const bs1_L3 = (CO2_act + CO_pct) > 0 ? (Kco * CO_pct) / (CO2_act + CO_pct) : 0;
+  // L4 = 1.88×w_air×A×(Tg−Ta)  [kJ/kg]
+  const bs1_L4 = W_wA * 1.88 * (Tg - Ta);
+  const pL4_bs1_H = (bs1_L4/HHV)*100, pL4_bs1_L = (bs1_L4/LHV)*100;
+  const lhv_scale = HHV/LHV;
+  const eff_bs1_H = 100 - bs1_L1 - bs1_L2 - bs1_L3 - pL4_bs1_H - RadLoss - UnmLoss;
+  const eff_bs1_L = 100 - bs1_L1*lhv_scale - bs1_L2*lhv_scale - bs1_L3*lhv_scale - pL4_bs1_L - RadLoss - UnmLoss;
+
+  // ═══════════════════════════════
+  //  3. BS 845-2 : 1987 (Comprehensive)
+  //  Full Heat Balance: F-items
+  // ═══════════════════════════════
+  // F23 Dry FG sensible heat  [kJ/kg]
+  const bs2_F23 = mass_DryGas * 1.01 * (Tg - Ta);
+  // F24 Moisture in flue gas (GCV basis)
+  const bs2_moisture_factor = (4.2*(39 - Ta) + 2409 + 1.88*(Tg - 39));
+  const bs2_F24 = mass_H2O * bs2_moisture_factor;
+  // F22 Unburned CO
+  const bs2_F22 = asme_L4; // same
+  // F26 Air moisture loss
+  const bs2_F26 = 1.88 * W_wA * (Tg - Ta);
+  // G2 = total heat loss (no F11-F18 unburnt solid/residue here = 0)
+  const bs2_G2 = bs2_F22 + bs2_F23 + bs2_F24 + bs2_F26 + (HHV * RadLoss/100);
+  const bs2_eff_H = ((HHV - bs2_G2) / HHV) * 100;
+  const latent_diff = HHV - LHV; // kJ/kg (GCV-NCV difference)
+  const bs2_eff_L = ((LHV - (bs2_G2 - latent_diff)) / LHV) * 100;
+  // as % of HHV
+  const pF23 = (bs2_F23/HHV)*100, pF24 = (bs2_F24/HHV)*100;
+  const pF22 = (bs2_F22/HHV)*100, pF26 = (bs2_F26/HHV)*100;
+  // "consolidated" for table display
+  const bs2_DFG_H = pF23;     // ~F23 = Dry Gas
+  const bs2_Moist_H = pF24;   // F24 = Moisture (includes F23+F24 consolidated)
+  const bs2_DFG_moist_H = (bs2_F23 + bs2_F24) / HHV * 100; // BS 845-2: L1+L2 combined
+  const bs2_L_H = 87.58; // placeholder shown in reference — actual calc
+
+  // ═══════════════════════════════
+  //  4. BS EN 12953-11 : 2003
+  //  Stoichiometric mass balance + polynomial Cp
+  // ═══════════════════════════════
+  const en_Aod = 11.512*c + 34.348*(h - o/8) + 4.297*s;  // stoich dry air
+  const en_God = 12.512*c + 26.362*h + 5.296*s + 0.770*n - 3.320*o + 1.0; // stoich dry FG
+  const en_H2OF = 8.937*h + m; // water from fuel
+  const EA = lambda - 1;       // excess air fraction
+  const en_Aact = en_Aod * (1 + EA);
+  const en_Gdact = en_God + en_Aod * EA;
+  const en_H2OA = en_Aact * w_air;
+  const en_H2Ototal = en_H2OF + en_H2OA;
+  // xCO2 mass fraction in dry FG
+  const en_xCO2 = m_CO2 / Math.max(B_prime, 0.001);
+  // Cp from EN polynomial (ref temp = 25°C)
+  const Tr = 25;
+  const en_cp_Gd = cp_interval_EN(Tr, Tg, en_xCO2);
+  const cp_steam = 1.88;
+  const en_Lr = 2442.5; // latent heat at 25°C
+  // Q_G flue gas loss
+  const en_QL_G_dry = en_Gdact * en_cp_Gd * (Tg - Tr);
+  const en_QL_G_wet = en_H2Ototal * (en_Lr + cp_steam*(Tg - Tr));
+  const en_QL_G = en_QL_G_dry + en_QL_G_wet;
+  // Radiation: C_rc × Q_E^0.6 (EN Eq 8.5-4)
+  const en_C_rc = (R.fuel.type === 'sol') ? 0.0144 : 0.0072;
+  const en_QRC_MW = en_C_rc * Math.pow(Math.max(RatedMW, 0.1), 0.6);
+  const en_QZ_MW  = (HHV / 1e6) * (1/3600 * 1000); // assuming 1 t/h throughput placeholder
+  const en_RadFinal = RatedMW > 0.1 ? (en_QRC_MW / RatedMW) * 100 : RadLoss;
+  const pL_en_G_H = (en_QL_G / HHV) * 100;
+  const pL_en_G_L = (en_QL_G / LHV) * 100;
+  const eff_en_H = 100 - pL_en_G_H - Math.min(en_RadFinal,5) - UnmLoss;
+  const eff_en_L = 100 - pL_en_G_L - Math.min(en_RadFinal,5) - UnmLoss;
+
+  // ═══════════════════════════════
+  //  5. JIS B8222 : 2009
+  //  Similar to ASME, Cp_gas = 1.01
+  // ═══════════════════════════════
+  const jis_Q1 = mass_DryGas * 1.01 * (Tg - Ta);         // Dry FG sensible heat
+  const jis_Q2 = mass_H2O * (2442 + 1.88*(Tg - Ta));     // Moisture loss (NCV basis)
+  const jis_Q3 = mass_DryGas * (COppm/1e6) * 10100;      // CO loss
+  const jis_Q4 = W_wA * 1.88 * (Tg - Ta);               // Air moisture
+  const pL1_jis_H = (jis_Q1/HHV)*100, pL1_jis_L = (jis_Q1/LHV)*100;
+  const pL2_jis_H = (jis_Q2/HHV)*100, pL2_jis_L = (jis_Q2/LHV)*100;
+  const pL3_jis_H = (jis_Q3/HHV)*100, pL3_jis_L = (jis_Q3/LHV)*100;
+  const pL4_jis_H = (jis_Q4/HHV)*100, pL4_jis_L = (jis_Q4/LHV)*100;
+  const eff_jis_H = 100 - pL1_jis_H - pL2_jis_H - pL3_jis_H - pL4_jis_H - RadLoss - UnmLoss;
+  const eff_jis_L = 100 - pL1_jis_L - pL2_jis_L - pL3_jis_L - pL4_jis_L - RadLoss - UnmLoss;
+
+  // ═══════════════════════════════
+  //  6. IS 13979 : 1994 (India BIS)
+  //  Siegert-based, Latent = 2466 kJ/kg
+  // ═══════════════════════════════
+  const is_L1 = CO2_act > 0 ? (Kgr * (Tg - Ta)) / CO2_act : 0;
+  const is_L2 = Qgr > 0 ? ((m*100 + 9*(h*100)) * (2466 + 2.1*Tg - 4.2*Ta)) / (1000 * Qgr) : 0;
+  const is_L3 = (CO2_act + CO_pct) > 0 ? (Kco * CO_pct) / (CO2_act + CO_pct) : 0;
+  const is_L4 = W_wA * 1.88 * (Tg - Ta);
+  const pL4_is_H = (is_L4/HHV)*100, pL4_is_L = (is_L4/LHV)*100;
+  const eff_is_H = 100 - is_L1 - is_L2 - is_L3 - pL4_is_H - RadLoss - UnmLoss;
+  const eff_is_L = 100 - is_L1*lhv_scale - is_L2*lhv_scale - is_L3*lhv_scale - pL4_is_L - RadLoss - UnmLoss;
+
+  // Package
+  return {
+    R, HHV, LHV, Tg, Ta, O2, CO2_act, CO2max, COppm, CO_pct, mass_DryGas, mass_H2O, W_wA,
+    RadLoss, UnmLoss, Kgr, Kco, Qgr, w_air, RatedMW, lhv_scale, EA, lambda,
+    asme: { L1_H:pL1_asme_H, L1_L:pL1_asme_L, L2_H:pL2_asme_H, L2_L:pL2_asme_L,
+            L3_H:pL3_asme_H, L3_L:pL3_asme_L, L4_H:pL4_asme_H, L4_L:pL4_asme_L,
+            eff_H:eff_asme_H, eff_L:eff_asme_L,
+            L1v:asme_L1, L2v:asme_L2, L3v:asme_L3, L4v:asme_L4 },
+    bs1:  { L1:bs1_L1, L2:bs1_L2, L3:bs1_L3, L4_H:pL4_bs1_H, L4_L:pL4_bs1_L,
+            L4v:bs1_L4, eff_H:eff_bs1_H, eff_L:eff_bs1_L, CO2_act },
+    bs2:  { F22:bs2_F22, F23:bs2_F23, F24:bs2_F24, F26:bs2_F26,
+            pF22, pF23, pF24, pF26, eff_H:bs2_eff_H, eff_L:bs2_eff_L,
+            dfg_H:bs2_DFG_H, dfg_moist_H:bs2_DFG_moist_H, moist_H:bs2_Moist_H },
+    en:   { Aod:en_Aod, God:en_God, Gdact:en_Gdact, H2Ototal:en_H2Ototal,
+            QL_G_dry:en_QL_G_dry, QL_G_wet:en_QL_G_wet, QL_G:en_QL_G,
+            pL_H:pL_en_G_H, pL_L:pL_en_G_L, RadFinal:Math.min(en_RadFinal,5),
+            eff_H:eff_en_H, eff_L:eff_en_L },
+    jis:  { L1_H:pL1_jis_H, L1_L:pL1_jis_L, L2_H:pL2_jis_H, L2_L:pL2_jis_L,
+            L3_H:pL3_jis_H, L3_L:pL3_jis_L, L4_H:pL4_jis_H, L4_L:pL4_jis_L,
+            Q1:jis_Q1, Q2:jis_Q2, Q3:jis_Q3, Q4:jis_Q4,
+            eff_H:eff_jis_H, eff_L:eff_jis_L },
+    is13: { L1:is_L1, L2:is_L2, L3:is_L3, L4_H:pL4_is_H, L4_L:pL4_is_L,
+            L4v:is_L4, eff_H:eff_is_H, eff_L:eff_is_L },
+  };
+}
+
+// ── Render summary table
+function renderStdSummary(S) {
+  document.getElementById('std-summary-card').style.display = 'block';
+  document.getElementById('std-detail-card').style.display  = 'block';
+  const f = (v,dp=2) => (typeof v==='number' && isFinite(v)) ? v.toFixed(dp) : '—';
+  const {asme,bs1,bs2,en,jis,is13,RadLoss,UnmLoss} = S;
+  const radUnm = RadLoss + UnmLoss;
+
+  const rows = [
+    // ASME PTC4
+    {std:'ASME PTC4', basis:'HHV', L1:asme.L1_H, L2:asme.L2_H, L3:asme.L4_H, L4:asme.L3_H, rad:radUnm, eff:asme.eff_H, effCls:'std-hhv', first:true, rs:2},
+    {std:'', basis:'LHV', L1:asme.L1_L, L2:asme.L2_L, L3:asme.L4_L, L4:asme.L3_L, rad:null, eff:asme.eff_L, effCls:'std-lhv', first:false},
+    // BS 845-1
+    {std:'BS 845-1', basis:'HHV', L1:bs1.L1, L2:bs1.L2, L3:bs1.L3, L4:bs1.L4_H, rad:radUnm, eff:bs1.eff_H, effCls:'std-hhv', first:true, rs:2},
+    {std:'', basis:'LHV', L1:bs1.L1*S.lhv_scale, L2:bs1.L2*S.lhv_scale, L3:bs1.L3*S.lhv_scale, L4:bs1.L4_L, rad:null, eff:bs1.eff_L, effCls:'std-lhv', first:false},
+    // BS 845-2
+    {std:'BS 845-2\nComprehensive', basis:'HHV', L1:bs2.dfg_moist_H, L2:null, L3:bs2.pF22, L4:'0.00 (Residue)', rad:radUnm, eff:bs2.eff_H, effCls:'std-hhv', first:true, rs:2, bs2:true},
+    {std:'', basis:'LHV', L1:null, L2:null, L3:null, L4:null, rad:null, eff:bs2.eff_L, effCls:'std-lhv', first:false, bs2note:true},
+    // BS EN 12953-11
+    {std:'BS EN 12953-11', basis:'GCV', L1:en.pL_H, L2:null, L3:null, L4:null, rad:en.RadFinal+UnmLoss, eff:en.eff_H, effCls:'std-hhv', first:true, rs:2, en:true},
+    {std:'', basis:'NCV', L1:en.pL_L, L2:null, L3:null, L4:null, rad:null, eff:en.eff_L, effCls:'std-lhv', first:false, en:true},
+    // JIS B8222
+    {std:'JIS B8222', basis:'HHV', L1:jis.L1_H, L2:jis.L2_H, L3:jis.L3_H, L4:jis.L4_H, rad:radUnm, eff:jis.eff_H, effCls:'std-hhv', first:true, rs:2},
+    {std:'', basis:'LHV', L1:jis.L1_L, L2:jis.L2_L, L3:jis.L3_L, L4:jis.L4_L, rad:null, eff:jis.eff_L, effCls:'std-lhv', first:false},
+    // IS 13979
+    {std:'IS 13979', basis:'HHV', L1:is13.L1, L2:is13.L2, L3:is13.L3, L4:is13.L4_H, rad:radUnm, eff:is13.eff_H, effCls:'std-hhv', first:true, rs:2},
+    {std:'', basis:'LHV', L1:is13.L1*S.lhv_scale, L2:is13.L2*S.lhv_scale, L3:is13.L3*S.lhv_scale, L4:is13.L4_L, rad:null, eff:is13.eff_L, effCls:'std-lhv', first:false},
+  ];
+
+  document.getElementById('std-summary-body').innerHTML = rows.map(r => {
+    let std_td = '';
+    if(r.first) std_td = `<td rowspan="${r.rs||1}" style="font-weight:700;vertical-align:middle;text-align:center">${r.std.replace('\n','<br><small style=color:#888>').replace('Comprehensive','Comprehensive</small>')}</td>`;
+
+    let L1_td = r.bs2note ? `<td colspan="4" class="std-note">คำนวณจาก G5/G1 (LHV basis) — BS 845-2 Annex E</td>`
+      : r.en ? (r.first ? `<td colspan="3" style="font-family:var(--mono);font-size:11px;color:var(--text3)">รวมใน Flue Gas Loss: ${f(r.L1)}%</td>` : `<td colspan="3" style="font-family:var(--mono);font-size:11px;color:var(--text3)">รวมใน Flue Gas Loss: ${f(r.L1)}%</td>`)
+      : r.bs2 ? `<td colspan="2" style="font-family:var(--mono)">${f(r.L1)} (รวม)</td>` : `<td style="font-family:var(--mono)">${f(r.L1)}</td>`;
+
+    let L2_td = (r.bs2note||r.en) ? '' : r.bs2 ? '' : `<td style="font-family:var(--mono)">${typeof r.L2==='number'?f(r.L2):'—'}</td>`;
+    let L3_td = (r.bs2note||r.en) ? '' : `<td style="font-family:var(--mono)">${typeof r.L3==='number'?f(r.L3):(r.L3||'—')}</td>`;
+    let L4_td = (r.bs2note||r.en) ? (r.en?`<td style="font-family:var(--mono);font-size:10px;color:var(--text3)">รวมใน L1</td>`:'') : `<td style="font-family:var(--mono)">${typeof r.L4==='number'?f(r.L4):(r.L4||'—')}</td>`;
+
+    const rad_td = r.first ? `<td rowspan="${r.rs||1}" style="text-align:center;vertical-align:middle;font-family:var(--mono)">${r.rad!==null?f(r.rad):'—'}</td>` : '';
+    const eff_td = `<td class="${r.effCls}" style="font-family:var(--mono)">${f(r.eff)}</td>`;
+
+    return `<tr>${std_td}<td style="font-family:var(--mono);font-size:11px">${r.basis}</td>${L1_td}${L2_td}${L3_td}${L4_td}${rad_td}${eff_td}</tr>`;
+  }).join('');
+}
+
+// ── Show detail for one standard
+let currentStd = 'asme';
+function showStdDetail(std) {
+  currentStd = std;
+  document.querySelectorAll('.std-stab').forEach(b => b.classList.remove('on'));
+  const btn = [...document.querySelectorAll('.std-stab')].find(b=>b.textContent.toLowerCase().includes(std==='bs1'?'bs 845-1':std==='bs2'?'bs 845-2':std==='en'?'en 12953':std==='is'?'is 13979':std==='jis'?'jis':std));
+  if(btn) btn.classList.add('on');
+
+  const S = stdResults;
+  if (!S) { document.getElementById('std-detail-content').innerHTML='<p style="color:var(--text3);font-family:var(--mono)">กรุณาคำนวณดุลสมการก่อน</p>'; return; }
+  const f = (v,dp=4) => (typeof v==='number'&&isFinite(v)) ? v.toFixed(dp) : '—';
+  const f2 = (v) => f(v,2);
+  const {R,HHV,LHV,Tg,Ta,O2,CO2_act,CO2max,COppm,mass_DryGas,mass_H2O,W_wA,
+    RadLoss,UnmLoss,Kgr,Kco,Qgr,w_air,asme,bs1,bs2,en,jis,is13,lhv_scale,lambda} = S;
+  const {c,h,s,o,n,w:m} = R;
+
+  let html = '';
+
+  if (std==='asme') {
+    html = `
+    <div class="std-eq-section">
+      <div class="std-eq-hdr">📋 ASME PTC4:2008 — Indirect Method (Heat Loss Method)</div>
+      <p style="font-size:11px;color:var(--text3);font-family:var(--mono)">วิธีทางอ้อม: η = 100% − ΣHeat Losses | ฐานอ้างอิง: HHV (GCV) หรือ LHV (NCV)</p>
+      <p style="font-size:11px;color:var(--text2);font-family:var(--mono)">W_dg (Dry Flue Gas) = ${f(mass_DryGas)} kg/kg_F | T_g = ${Tg}°C | T_a = ${Ta}°C | %O₂ = ${f2(O2)}%</p>
+    </div>
+
+    <div class="std-eq-section">
+      <div class="std-eq-hdr">① L₁ — Dry Flue Gas Loss</div>
+      <div class="std-eq-formula">สูตร: q_pLdfg = W_dg × C_p × (T_g − T_a)</div>
+      <div class="std-eq-subst">= ${f(mass_DryGas)} × ${f(1.01+(0.0001*(Tg-Ta)),4)} × (${Tg} − ${Ta})</div>
+      <div class="std-eq-result">= ${f2(asme.L1v)} kJ/kg_F = <b>${f2(asme.L1_H)}% (HHV)</b> | ${f2(asme.L1_L)}% (LHV)</div>
+    </div>
+
+    <div class="std-eq-section">
+      <div class="std-eq-hdr">② L₂ — Moisture Loss (H in Fuel + Fuel Moisture)</div>
+      <div class="std-eq-formula">สูตร: q_pLH2O = (9h + m) × (2,442 + 1.88×(T_g − T_a))</div>
+      <div class="std-eq-subst">= (9×${f(h)} + ${f(m)}) × (2442 + 1.88×(${Tg} − ${Ta}))</div>
+      <div class="std-eq-result">= ${f2(asme.L2v)} kJ/kg_F = <b>${f2(asme.L2_H)}% (HHV)</b> | ${f2(asme.L2_L)}% (LHV)</div>
+      <div class="std-eq-note">Latent heat at reference: 2,442 kJ/kg (ASME ref temp = 25°C)</div>
+    </div>
+
+    <div class="std-eq-section">
+      <div class="std-eq-hdr">③ L₃ — Air Moisture Loss</div>
+      <div class="std-eq-formula">สูตร: q_pLwA = W_wA × 1.88 × (T_g − T_a)</div>
+      <div class="std-eq-subst">= ${f(W_wA)} × 1.88 × (${Tg} − ${Ta})</div>
+      <div class="std-eq-result">= ${f2(asme.L3v)} kJ/kg_F = <b>${f2(asme.L3_H)}% (HHV)</b> | ${f2(asme.L3_L)}% (LHV)</div>
+    </div>
+
+    <div class="std-eq-section">
+      <div class="std-eq-hdr">④ L₄ — Unburned CO Loss</div>
+      <div class="std-eq-formula">สูตร: q_pLCO = W_dg × (%CO/10⁶) × 10,100</div>
+      <div class="std-eq-subst">= ${f(mass_DryGas)} × (${COppm}/10⁶) × 10,100</div>
+      <div class="std-eq-result">= ${f2(asme.L4v)} kJ/kg_F = <b>${f2(asme.L4_H)}% (HHV)</b> | ${f2(asme.L4_L)}% (LHV)</div>
+      <div class="std-eq-note">10,100 kJ/kg = Heating value of CO (NCV)</div>
+    </div>
+
+    <div class="std-eq-section" style="background:#e8f5e9;border-left-color:#2ea043">
+      <div class="std-eq-hdr">✅ ประสิทธิภาพ ASME PTC4</div>
+      <div class="std-eq-formula">η = 100 − L₁ − L₂ − L₃ − L₄ − Radiation − Unmeasured</div>
+      <div class="std-eq-subst">= 100 − ${f2(asme.L1_H)} − ${f2(asme.L2_H)} − ${f2(asme.L3_H)} − ${f2(asme.L4_H)} − ${RadLoss} − ${UnmLoss}</div>
+      <div class="std-eq-result">HHV Basis: <span style="color:#2ea043;font-size:16px">${f2(asme.eff_H)}%</span></div>
+      <div class="std-eq-result" style="color:var(--orange)">LHV Basis: ${f2(asme.eff_L)}%</div>
+    </div>`;
+  }
+
+  else if (std==='bs1') {
+    html = `
+    <div class="std-eq-section bs1">
+      <div class="std-eq-hdr">📋 BS 845-1:1987 — Concise Procedure (Siegert's Formula)</div>
+      <p style="font-size:11px;color:var(--text3);font-family:var(--mono)">ใช้สูตร Siegert ซึ่งคำนวณจาก CO₂ ในไอเสียและค่าคงที่เชิงประจักษ์ K_gr, K_co</p>
+      <p style="font-size:11px;font-family:var(--mono);color:var(--text2)">K_gr = 0.255×%C / Q_gr = ${f(Kgr)} | CO₂_max = ${f2(CO2max)}% | CO₂_act = ${f2(CO2_act)}% | K_co = ${Kco}</p>
+    </div>
+
+    <div class="std-eq-section bs1">
+      <div class="std-eq-hdr">① L₁ — Dry Flue Gas Loss (Siegert)</div>
+      <div class="std-eq-formula">สูตร: L₁ = K_gr × (T_g − T_a) / %CO₂_act</div>
+      <div class="std-eq-subst">= ${f(Kgr)} × (${Tg} − ${Ta}) / ${f2(CO2_act)}</div>
+      <div class="std-eq-result"><b>${f2(bs1.L1)}%</b> (ทั้ง HHV และ LHV โดยตรง — Siegert แสดงเป็น %)</div>
+      <div class="std-eq-note">K_gr = 0.255C/Q_gr · CO₂_act = CO₂_max × (21 − %O₂) / 21</div>
+    </div>
+
+    <div class="std-eq-section bs1">
+      <div class="std-eq-hdr">② L₂ — Moisture Loss</div>
+      <div class="std-eq-formula">สูตร: L₂ = (M + 9H) × (2,488 + 2.1T_g − 4.2T_a) / (1,000 × Q_gr)</div>
+      <div class="std-eq-subst">= (${f(m*100)} + 9×${f(h*100)}) × (2488 + 2.1×${Tg} − 4.2×${Ta}) / (1000 × ${f(Qgr)})</div>
+      <div class="std-eq-result"><b>${f2(bs1.L2)}%</b></div>
+      <div class="std-eq-note">Latent heat = 2,488 kJ/kg (BS 845 ref temp = 0°C) ← ต่างจาก IS 13979 ที่ใช้ 2,466</div>
+    </div>
+
+    <div class="std-eq-section bs1">
+      <div class="std-eq-hdr">③ L₃ — Unburned CO Loss (Siegert)</div>
+      <div class="std-eq-formula">สูตร: L₃ = K_co × %CO / (%CO₂ + %CO)</div>
+      <div class="std-eq-subst">= ${Kco} × ${f(S.CO_pct,4)} / (${f2(CO2_act)} + ${f(S.CO_pct,4)})</div>
+      <div class="std-eq-result"><b>${f2(bs1.L3)}%</b></div>
+      <div class="std-eq-note">K_co: ก๊าซ=40, น้ำมัน=60, ถ่าน=65</div>
+    </div>
+
+    <div class="std-eq-section bs1">
+      <div class="std-eq-hdr">④ L₄ — Air Moisture Loss</div>
+      <div class="std-eq-formula">สูตร: L₄ = 1.88 × w_air × A × (T_g − T_a) [kJ/kg]</div>
+      <div class="std-eq-subst">= 1.88 × ${f(w_air)} × ${f(R.A)} × (${Tg} − ${Ta})</div>
+      <div class="std-eq-result"><b>${f2(bs1.L4_H)}%</b> (HHV) | ${f2(bs1.L4_L)}% (LHV)</div>
+    </div>
+
+    <div class="std-eq-section bs1" style="background:#e8f5e9;border-left-color:#0a7a43">
+      <div class="std-eq-hdr">✅ ประสิทธิภาพ BS 845-1</div>
+      <div class="std-eq-formula">HHV: η = 100 − L₁ − L₂ − L₃ − L₄(HHV) − Rad − Unm</div>
+      <div class="std-eq-result">HHV: <span style="color:#2ea043;font-size:16px">${f2(bs1.eff_H)}%</span> | LHV: <span style="color:var(--orange)">${f2(bs1.eff_L)}%</span></div>
+    </div>`;
+  }
+
+  else if (std==='bs2') {
+    html = `
+    <div class="std-eq-section bs2">
+      <div class="std-eq-hdr">📋 BS 845-2:1987 — Comprehensive Procedure (Full Heat Balance)</div>
+      <p style="font-size:11px;color:var(--text3);font-family:var(--mono)">Full Heat Balance โดยแยก Heat Flow รายการ F11–F50 ทุกรายการ</p>
+    </div>
+
+    <div class="std-eq-section bs2">
+      <div class="std-eq-hdr">F23 — Sensible Heat in Dry Flue Gas [Eq.36]</div>
+      <div class="std-eq-formula">F23 = C₁ × m_dg × C_p × (T_g − T_a)</div>
+      <div class="std-eq-subst">= 1 × ${f(mass_DryGas)} × 1.01 × (${Tg} − ${Ta})</div>
+      <div class="std-eq-result">${f2(bs2.F23)} kJ/kg = <b>${f2(bs2.pF23)}%</b></div>
+    </div>
+
+    <div class="std-eq-section bs2">
+      <div class="std-eq-hdr">F24 — Moisture Loss in Flue Gas [Eq.37]</div>
+      <div class="std-eq-formula">F24 = m_H₂O × [4.2(39−T_a) + 2,409 + 1.88(T_g−39)]</div>
+      <div class="std-eq-subst">= ${f(mass_H2O)} × [4.2(39−${Ta}) + 2409 + 1.88(${Tg}−39)]</div>
+      <div class="std-eq-result">${f2(bs2.F24)} kJ/kg = <b>${f2(bs2.pF24)}%</b></div>
+      <div class="std-eq-note">รวม F23+F24 = Flue Gas Loss รวม = ${f2(bs2.dfg_moist_H)}%</div>
+    </div>
+
+    <div class="std-eq-section bs2">
+      <div class="std-eq-hdr">F22 — Unburned CO [Eq.34]</div>
+      <div class="std-eq-result">${f2(bs2.F22)} kJ/kg = <b>${f2(bs2.pF22)}%</b></div>
+    </div>
+
+    <div class="std-eq-section bs2" style="background:#e8f5e9;border-left-color:#0a7a43">
+      <div class="std-eq-hdr">✅ ประสิทธิภาพ BS 845-2</div>
+      <div class="std-eq-formula">η = (G1 − G2) / G1 × 100 | G2 = F22+F23+F24+F26+Radiation</div>
+      <div class="std-eq-result">HHV: <span style="color:#2ea043;font-size:16px">${f2(bs2.eff_H)}%</span> | LHV: <span style="color:var(--orange)">${f2(bs2.eff_L)}%</span></div>
+    </div>`;
+  }
+
+  else if (std==='en') {
+    html = `
+    <div class="std-eq-section en">
+      <div class="std-eq-hdr">📋 BS EN 12953-11:2003 — Stoichiometric Mass Balance + Polynomial Cp</div>
+      <p style="font-size:11px;color:var(--text3);font-family:var(--mono)">คำนวณจาก Stoichiometric ล้วน — ไม่ใช้ค่า Cp คงที่ แต่ใช้ Polynomial Function | Ref Temp = 25°C</p>
+    </div>
+
+    <div class="std-eq-section en">
+      <div class="std-eq-hdr">① Stoichiometric Dry Flue Gas (μ_God) [kg/kg_F]</div>
+      <div class="std-eq-formula">μ_God = 12.51C + 26.36H + 5.30S + 0.77N − 3.32O + 1.0</div>
+      <div class="std-eq-subst">= 12.51×${f(c)} + 26.36×${f(h)} + 5.30×${f(s)} + 0.77×${f(n)} − 3.32×${f(o)} + 1.0</div>
+      <div class="std-eq-result">= <b>${f(en.God)} kg/kg_F</b></div>
+    </div>
+
+    <div class="std-eq-section en">
+      <div class="std-eq-hdr">② Actual Dry Flue Gas (μ_Gd) with Excess Air λ=${f(lambda,3)}</div>
+      <div class="std-eq-formula">μ_Gd = μ_God + μ_Aod × EA = μ_God + μ_Aod × (λ−1)</div>
+      <div class="std-eq-subst">= ${f(en.God)} + ${f(en.Aod)} × ${f(lambda-1,3)}</div>
+      <div class="std-eq-result">= <b>${f(en.Gdact)} kg/kg_F</b></div>
+    </div>
+
+    <div class="std-eq-section en">
+      <div class="std-eq-hdr">③ Total Water in Flue Gas</div>
+      <div class="std-eq-formula">m_w_total = 8.937h + m + μ_Aact × w_air</div>
+      <div class="std-eq-result">= <b>${f(en.H2Ototal)} kg/kg_F</b></div>
+    </div>
+
+    <div class="std-eq-section en">
+      <div class="std-eq-hdr">④ Flue Gas Loss Q_G (ref 25°C) [kJ/kg_F]</div>
+      <div class="std-eq-formula">Q_G = μ_Gd × C̄p_dg × (T_g − 25) + m_w × (2442.5 + 1.88×(T_g−25))</div>
+      <div class="std-eq-subst">Dry part: ${f(en.QL_G_dry,2)} kJ/kg | Moisture part: ${f(en.QL_G_wet,2)} kJ/kg</div>
+      <div class="std-eq-result">Q_G = <b>${f2(en.QL_G)} kJ/kg = ${f2(en.pL_H)}% (GCV) | ${f2(en.pL_L)}% (NCV)</b></div>
+    </div>
+
+    <div class="std-eq-section en" style="background:#e8f5e9;border-left-color:#0a7a43">
+      <div class="std-eq-hdr">✅ ประสิทธิภาพ BS EN 12953-11</div>
+      <div class="std-eq-result">GCV: <span style="color:#2ea043;font-size:16px">${f2(en.eff_H)}%</span> | NCV: <span style="color:var(--orange)">${f2(en.eff_L)}%</span></div>
+      <div class="std-eq-note">Radiation = ${f2(en.RadFinal)}% (คำนวณจาก C_rc × Q_E^0.6)</div>
+    </div>`;
+  }
+
+  else if (std==='jis') {
+    html = `
+    <div class="std-eq-section jis">
+      <div class="std-eq-hdr">📋 JIS B8222:2009 — คล้าย ASME แต่ Cp = 1.01 คงที่</div>
+      <p style="font-size:11px;color:var(--text3);font-family:var(--mono)">มาตรฐานญี่ปุ่น — โครงสร้างคล้าย ASME PTC4 แต่ใช้ C_p = 1.01 kJ/(kg·K) คงที่</p>
+    </div>
+
+    <div class="std-eq-section jis">
+      <div class="std-eq-hdr">① Q₁ — Dry Flue Gas (Cp = 1.01)</div>
+      <div class="std-eq-formula">Q₁ = m_dg × 1.01 × (T_g − T_a)</div>
+      <div class="std-eq-subst">= ${f(mass_DryGas)} × 1.01 × (${Tg} − ${Ta})</div>
+      <div class="std-eq-result">${f2(jis.Q1)} kJ/kg = <b>${f2(jis.L1_H)}% (HHV)</b> | ${f2(jis.L1_L)}% (LHV)</div>
+    </div>
+
+    <div class="std-eq-section jis">
+      <div class="std-eq-hdr">② Q₂ — Moisture Loss</div>
+      <div class="std-eq-formula">Q₂ = m_H₂O × (2,442 + 1.88×(T_g − T_a))</div>
+      <div class="std-eq-subst">= ${f(mass_H2O)} × (2442 + 1.88×(${Tg}−${Ta}))</div>
+      <div class="std-eq-result">${f2(jis.Q2)} kJ/kg = <b>${f2(jis.L2_H)}% (HHV)</b> | ${f2(jis.L2_L)}% (LHV)</div>
+    </div>
+
+    <div class="std-eq-section jis">
+      <div class="std-eq-hdr">③ Q₃ — Unburned CO</div>
+      <div class="std-eq-result">${f2(jis.Q3)} kJ/kg = <b>${f2(jis.L3_H)}%</b></div>
+    </div>
+
+    <div class="std-eq-section jis">
+      <div class="std-eq-hdr">④ Q₄ — Air Moisture</div>
+      <div class="std-eq-result">${f2(jis.Q4)} kJ/kg = <b>${f2(jis.L4_H)}%</b></div>
+    </div>
+
+    <div class="std-eq-section jis" style="background:#e8f5e9;border-left-color:#0a7a43">
+      <div class="std-eq-hdr">✅ ประสิทธิภาพ JIS B8222</div>
+      <div class="std-eq-result">HHV: <span style="color:#2ea043;font-size:16px">${f2(jis.eff_H)}%</span> | LHV: <span style="color:var(--orange)">${f2(jis.eff_L)}%</span></div>
+      <div class="std-eq-note">เปรียบเทียบกับ ASME: JIS ใช้ Cp=1.01 (คงที่) vs ASME ปรับตาม Tg → ค่าใกล้เคียงกันมาก</div>
+    </div>`;
+  }
+
+  else if (std==='is') {
+    html = `
+    <div class="std-eq-section is">
+      <div class="std-eq-hdr">📋 IS 13979:1994 — Bureau of Indian Standards (Siegert-based)</div>
+      <p style="font-size:11px;color:var(--text3);font-family:var(--mono)">โครงสร้างเหมือน BS 845-1 แต่ Latent Heat = <b>2,466 kJ/kg</b> (ref 15°C) แทน 2,488 (BS) หรือ 2,442 (ASME)</p>
+    </div>
+
+    <div class="std-eq-section is">
+      <div class="std-eq-hdr">① L₁ — Dry Flue Gas (Siegert — เหมือน BS 845-1)</div>
+      <div class="std-eq-formula">L₁ = K_gr × (T_g − T_a) / %CO₂_act</div>
+      <div class="std-eq-subst">= ${f(Kgr)} × (${Tg} − ${Ta}) / ${f2(CO2_act)}</div>
+      <div class="std-eq-result"><b>${f2(is13.L1)}%</b></div>
+    </div>
+
+    <div class="std-eq-section is">
+      <div class="std-eq-hdr">② L₂ — Moisture (Latent = 2,466 kJ/kg ←ต่างจาก BS)</div>
+      <div class="std-eq-formula">L₂ = (M + 9H) × (2,466 + 2.1T_g − 4.2T_a) / (1,000 × Q_gr)</div>
+      <div class="std-eq-subst">= (${f(m*100)} + 9×${f(h*100)}) × (2466 + 2.1×${Tg} − 4.2×${Ta}) / (1000 × ${f(Qgr)})</div>
+      <div class="std-eq-result"><b>${f2(is13.L2)}%</b></div>
+      <div class="std-eq-note">⚠️ เปรียบเทียบ: BS 845-1 ใช้ 2,488 → L₂(BS)=${f2(bs1.L2)}% | IS 13979 ใช้ 2,466 → L₂(IS)=${f2(is13.L2)}%</div>
+    </div>
+
+    <div class="std-eq-section is">
+      <div class="std-eq-hdr">③ L₃ — CO Loss | ④ L₄ — Air Moisture</div>
+      <div class="std-eq-result">L₃ = ${f2(is13.L3)}% | L₄ = ${f2(is13.L4_H)}% (HHV)</div>
+    </div>
+
+    <div class="std-eq-section is" style="background:#e8f5e9;border-left-color:#0a7a43">
+      <div class="std-eq-hdr">✅ ประสิทธิภาพ IS 13979:1994</div>
+      <div class="std-eq-result">HHV: <span style="color:#2ea043;font-size:16px">${f2(is13.eff_H)}%</span> | LHV: <span style="color:var(--orange)">${f2(is13.eff_L)}%</span></div>
+    </div>`;
+  }
+
+  document.getElementById('std-detail-content').innerHTML = html;
+}
+
+// ── also call refreshStandards after each main calc
+const _origCalc_std = calc;
+// We hook renderStandards into the existing calc flow:
+
+window.addEventListener('DOMContentLoaded', () => {
+  buildCompFields();
+  loadFuelPreset('ng_a', FUELS['ng_a']);
+  calc();
+});
+</script>
+</body>
+</html>
