@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Engineering Tools — Triple E Technology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #F0F4F8;
+  --bg-card:      #FFFFFF;
+  --bg-section:   #E8EFF7;
+  --border:       #D1DCE8;
+  --border-card:  #E2EAF3;
+  --text:         #1E293B;
+  --text2:        #64748B;
+  --text3:        #94A3B8;
+
+  --amber:        #D97706;
+  --amber-bg:     #FEF3C7;
+  --amber-border: #FDE68A;
+
+  --cyan:         #0891B2;
+  --cyan-bg:      #E0F7FA;
+  --cyan-border:  #B2EBF2;
+
+  --green:        #059669;
+  --green-bg:     #D1FAE5;
+  --green-border: #A7F3D0;
+
+  --rose:         #E11D48;
+  --rose-bg:      #FFE4E6;
+  --rose-border:  #FECDD3;
+
+  --violet:       #7C3AED;
+  --violet-bg:    #EDE9FE;
+  --violet-border:#DDD6FE;
+
+  --orange:       #EA580C;
+  --orange-bg:    #FFEDD5;
+  --orange-border:#FED7AA;
+
+  --red:          #DC2626;
+  --red-bg:       #FEE2E2;
+  --red-border:   #FECACA;
+
+  --radius:       12px;
+  --shadow:       0 1px 8px rgba(30,41,59,0.08);
+  --shadow-hover: 0 6px 24px rgba(30,41,59,0.14);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sarabun', 'IBM Plex Sans Thai', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, #1E3A5F 0%, #1a5276 50%, #0e6655 100%);
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 32px 32px;
+  position: relative;
+  z-index: 1;
+}
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+.logo-badge {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+  backdrop-filter: blur(4px);
+}
+.header-titles { flex: 1; }
+.header-titles h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+.header-titles .subtitle {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.72);
+  margin-top: 5px;
+}
+.header-titles .org-tag {
+  display: inline-block;
+  margin-top: 11px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 13px;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+.header-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+.hstat { text-align: center; }
+.hstat .num {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+}
+.hstat .lbl { font-size: 11.5px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+
+/* ── Main ── */
+.main {
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 32px 56px;
+}
+
+/* ── Section Label ── */
+.section + .section { margin-top: 40px; }
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 16px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-label .sl-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Tool Grid ── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* ── Tool Card ── */
+.tool-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+.tool-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
+
+/* Card stripe accent at top */
+.tool-card .card-stripe {
+  height: 4px;
+  width: 100%;
+}
+.stripe-orange { background: linear-gradient(90deg, var(--orange), #f97316); }
+.stripe-amber  { background: linear-gradient(90deg, var(--amber),  #f59e0b); }
+.stripe-red    { background: linear-gradient(90deg, var(--red),    #ef4444); }
+.stripe-cyan   { background: linear-gradient(90deg, var(--cyan),   #06b6d4); }
+.stripe-green  { background: linear-gradient(90deg, var(--green),  #10b981); }
+.stripe-rose   { background: linear-gradient(90deg, var(--rose),   #f43f5e); }
+.stripe-violet { background: linear-gradient(90deg, var(--violet), #8b5cf6); }
+
+.card-header {
+  padding: 15px 18px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-card);
+}
+.card-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+.ic-orange { background: var(--orange-bg); }
+.ic-amber  { background: var(--amber-bg);  }
+.ic-red    { background: var(--red-bg);    }
+.ic-cyan   { background: var(--cyan-bg);   }
+.ic-green  { background: var(--green-bg);  }
+.ic-rose   { background: var(--rose-bg);   }
+.ic-violet { background: var(--violet-bg); }
+
+.card-title-area { flex: 1; }
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+.card-subtitle {
+  font-size: 11.5px;
+  color: var(--text3);
+  margin-top: 3px;
+}
+
+.card-body {
+  padding: 13px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+.tag.orange { background: var(--orange-bg); color: var(--orange); border-color: var(--orange-border); }
+.tag.amber  { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-border);  }
+.tag.red    { background: var(--red-bg);    color: var(--red);    border-color: var(--red-border);    }
+.tag.cyan   { background: var(--cyan-bg);   color: var(--cyan);   border-color: var(--cyan-border);   }
+.tag.green  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border);  }
+.tag.rose   { background: var(--rose-bg);   color: var(--rose);   border-color: var(--rose-border);   }
+.tag.violet { background: var(--violet-bg); color: var(--violet); border-color: var(--violet-border); }
+
+.card-footer { padding: 10px 18px 15px; }
+.btn-open {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 0;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.btn-open.orange { background: var(--orange-bg); color: var(--orange); border-color: var(--orange-border); }
+.btn-open.orange:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
+.btn-open.amber  { background: var(--amber-bg);  color: var(--amber);  border-color: var(--amber-border);  }
+.btn-open.amber:hover  { background: var(--amber);  color: #fff; border-color: var(--amber);  }
+.btn-open.red    { background: var(--red-bg);    color: var(--red);    border-color: var(--red-border);    }
+.btn-open.red:hover    { background: var(--red);    color: #fff; border-color: var(--red);    }
+.btn-open.cyan   { background: var(--cyan-bg);   color: var(--cyan);   border-color: var(--cyan-border);   }
+.btn-open.cyan:hover   { background: var(--cyan);   color: #fff; border-color: var(--cyan);   }
+.btn-open.green  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border);  }
+.btn-open.green:hover  { background: var(--green);  color: #fff; border-color: var(--green);  }
+.btn-open.rose   { background: var(--rose-bg);   color: var(--rose);   border-color: var(--rose-border);   }
+.btn-open.rose:hover   { background: var(--rose);   color: #fff; border-color: var(--rose);   }
+.btn-open.violet { background: var(--violet-bg); color: var(--violet); border-color: var(--violet-border); }
+.btn-open.violet:hover { background: var(--violet); color: #fff; border-color: var(--violet); }
+
+/* ── Footer ── */
+.footer {
+  background: #fff;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 20px 32px;
+  font-size: 12.5px;
+  color: var(--text2);
+}
+.footer span { color: #1a5276; font-weight: 700; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .header-inner { padding: 24px 16px 20px; }
+  .header-titles h1 { font-size: 20px; }
+  .header-stats { gap: 18px; }
+  .main { padding: 0 16px 40px; margin-top: 20px; }
+  .tool-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo-badge">⚙️</div>
+      <div class="header-titles">
+        <h1>Personal Engineering Tools</h1>
+        <p class="subtitle">เครื่องมือวิศวกรรมพลังงานส่วนตัว — ระบบความร้อน ไฟฟ้า และเครื่องจักร</p>
+        <span class="org-tag">Triple E Technology — อ.หนึ่ง กลับทวี</span>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="hstat">
+        <div class="num">1</div>
+        <div class="lbl">เครื่องมือ</div>
+      </div>
+      <div class="hstat">
+        <div class="num">1</div>
+        <div class="lbl">หมวดหมู่</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- ══ Section 1: Thermal Systems ══ -->
+  <div class="section">
+    <div class="section-label">
+      <div class="sl-icon ic-orange">🔥</div>
+      Thermal Systems — ระบบความร้อน
+    </div>
+    <div class="tool-grid">
+
+      <!-- 1. Boiler Combustion Suite ← NEW (FIRST) -->
+      <div class="tool-card">
+        <div class="card-stripe stripe-red"></div>
+        <div class="card-header">
+          <div class="card-icon ic-red">🏭</div>
+          <div class="card-title-area">
+            <div class="card-title">Boiler Combustion Suite</div>
+            <div class="card-subtitle">หม้อไอน้ำ &amp; การเผาไหม้ — Triple E Technology</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-desc">ชุดเครื่องมือครบวงจรสำหรับวิเคราะห์หม้อไอน้ำและการเผาไหม้ ครอบคลุมประสิทธิภาพหม้อไอน้ำ สมการการเผาไหม้ อากาศส่วนเกิน และก๊าซไอเสีย</p>
+          <div class="tag-row">
+            <span class="tag red">Boiler</span>
+            <span class="tag red">Combustion</span>
+            <span class="tag orange">Flue Gas</span>
+            <span class="tag amber">Excess Air</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a class="btn-open red" href="tools/boiler_combustion_suite.html">📂 เปิดใช้งาน</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <span>Triple E Technology Co., Ltd.</span> &nbsp;·&nbsp; พัฒนาโดย อ.หนึ่ง กลับทวี &nbsp;·&nbsp; Personal Engineering Tools
+</footer>
+
+</body>
+</html>
